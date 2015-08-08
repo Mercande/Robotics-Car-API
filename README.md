@@ -21,7 +21,7 @@ git clone https://github.com/Mercande/Robotics-Car-API
 
 * Step 2
 
-Do do
+To do
 
 
 ## REST API ROUTES
