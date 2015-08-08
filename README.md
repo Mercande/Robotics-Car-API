@@ -25,8 +25,6 @@ Yoyo
 
 ## REST API ROUTES
 
-For each file request : basic-authentication token:empty
-
 * Main Controller
 
 |Root             | Method   | Description                 | Input                      | Output
