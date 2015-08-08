@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_SIZE 500
+#define MAX_SIZE 50000
 #define PORT 8888
 
 int main()
@@ -23,7 +23,7 @@ int main()
 	struct sockaddr_in serv_addr, client_addr;
 
 	// Buffer to store data read from client
-	char* buff;
+	char buff[MAX_SIZE];
 
 	// Create socket of domain - Internet (IP) address, type - Stream based (TCP) and protocol unspecified
 	// since it is only useful when underlying stack allows more than one protocol and we are choosing one.
@@ -54,15 +54,15 @@ int main()
 	if (bind(sock_descriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
 		printf("Failed to bind\n");
 
-	// Server should start listening - This enables the program to halt on accept call (coming next)
-	// and wait until a client connects. Also it specifies the size of pending connection requests queue
-	// i.e. in this case it is 5 which means 5 clients connection requests will be held pending while
-	// the server is already processing another connection request.
-	listen(sock_descriptor, 5);
-
 	while(1) {
 
-		printf("\n\nWaiting for connection on %d...\n\n", PORT);
+		// Server should start listening - This enables the program to halt on accept call (coming next)
+		// and wait until a client connects. Also it specifies the size of pending connection requests queue
+		// i.e. in this case it is 5 which means 5 clients connection requests will be held pending while
+		// the server is already processing another connection request.
+		listen(sock_descriptor, 5);
+
+		printf("\nWaiting for connection on %d...\n\n", PORT);
 		int size = sizeof(client_addr);
 
 		// Server blocks on this call until a client tries to establish connection.
@@ -75,16 +75,19 @@ int main()
 			printf("Connected\n");
 
 		// The new descriptor can be simply read from / written up just like a normal file descriptor
-		if ( read(conn_desc, buff, sizeof(buff)-1) > 0)
-			printf("Received %s", buff);
+		if ( read(conn_desc, buff, sizeof(buff)-1) > 0) {
+			printf("Received %s\n", buff);
+
+			// The new descriptor can be simply read from / written up just like a normal file descriptor
+			if ( write(conn_desc, buff, sizeof(buff)-1) > 0)
+				printf("Written %s", buff);
+			else
+				printf("Failed writing\n");
+		}
 		else
 			printf("Failed receiving\n");
 
-		// The new descriptor can be simply read from / written up just like a normal file descriptor
-		if ( write(conn_desc, buff, sizeof(buff)-1) > 0)
-			printf("Written %s", buff);
-		else
-			printf("Failed writing\n");
+		
 
 		// Program should always close all sockets (the connected one as well as the listening one)
 		// as soon as it is done processing with it
