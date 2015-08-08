@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_SIZE 500
+#define MAX_SIZE 5000
 #define PORT 8888
 
 int main()
@@ -62,7 +62,7 @@ int main()
 
 	while(1) {
 
-		printf("\n\nWaiting for connection...\n\n");
+		printf("\n\nWaiting for connection on %d...\n\n", PORT);
 		int size = sizeof(client_addr);
 
 		// Server blocks on this call until a client tries to establish connection.
@@ -84,7 +84,7 @@ int main()
 		if ( write(conn_desc, buff, sizeof(buff)-1) > 0)
 			printf("Written %s", buff);
 		else
-			printf("Failed receiving\n");
+			printf("Failed writing\n");
 
 		// Program should always close all sockets (the connected one as well as the listening one)
 		// as soon as it is done processing with it
