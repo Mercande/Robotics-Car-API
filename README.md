@@ -14,9 +14,10 @@ Robotics - Car - API
 
 ## INSTALLATION
 
-* Step 1
+* Step 1: Clone git repository
 
-Tata
+Open a terminal:
+git clone https://github.com/Mercande/Robotics-Car-API
 
 * Step 2
 
