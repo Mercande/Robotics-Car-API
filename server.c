@@ -51,8 +51,11 @@ int main()
 	// Attach the server socket to a port. This is required only for server since we enforce
 	// that it does not select a port randomly on it's own, rather it uses the port specified
 	// in serv_addr struct.
-	if (bind(sock_descriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+	if (bind(sock_descriptor, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
 		printf("Failed to bind\n");
+		close(sock_descriptor);
+		return 0;
+	}
 
 	while(1) {
 
@@ -76,7 +79,7 @@ int main()
 
 		// The new descriptor can be simply read from / written up just like a normal file descriptor
 		if ( read(conn_desc, buff, sizeof(buff)-1) > 0) {
-			printf("Received %s\n", buff);
+			printf("Received %s", buff);
 
 			// The new descriptor can be simply read from / written up just like a normal file descriptor
 			if ( write(conn_desc, buff, sizeof(buff)-1) > 0)
@@ -87,7 +90,7 @@ int main()
 		else
 			printf("Failed receiving\n");
 
-		
+		printf("\n");
 
 		// Program should always close all sockets (the connected one as well as the listening one)
 		// as soon as it is done processing with it
