@@ -31,7 +31,7 @@ For each file request : basic-authentication token:empty
 
 |Root             | Method   | Description                 | Input                      | Output
 |-----------------|----------|-----------------------------|----------------------------|-----------------------------
-| /file/          | GET 	 | Get list of files (bdd)     |                            | 
+| /               | GET 	 |                             |                            | 
 
 
 ## DEVELOPERS
