@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_SIZE 5000
+#define MAX_SIZE 500
 #define PORT 8888
 
 int main()
