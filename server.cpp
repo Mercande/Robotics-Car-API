@@ -14,8 +14,15 @@
 #define MAX_SIZE 50000
 #define PORT 8888
 
+int test_json() {
+
+}
+
 int main()
 {
+
+	test_json();
+
 	// Two socket descriptors which are just integer numbers used to access a socket
 	int sock_descriptor, conn_desc;
 
@@ -66,7 +73,7 @@ int main()
 		listen(sock_descriptor, 5);
 
 		printf("\nWaiting for connection on %d...\n\n", PORT);
-		int size = sizeof(client_addr);
+		socklen_t size = sizeof(client_addr);
 
 		// Server blocks on this call until a client tries to establish connection.
 		// When a connection is established, it returns a 'connected socket descriptor' different
