@@ -11,11 +11,51 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rapidjson/include/rapidjson/document.h"
+#include <cstdio>
+
 #define MAX_SIZE 50000
 #define PORT 8888
 
+void printLine() {
+	printf("------------------------------------------------\n");
+}
+
 int test_json() {
 
+	// JSON Tuto https://code.google.com/p/rapidjson/wiki/UserGuide
+	const char json[] = "{ \"succeed\" : true, \"id\" : 1988, \"value\" : \"toto\", \"pi\" : 3.14, \"n\": null, \"a\": [1,2,3]}";
+
+	printf("\n");
+	printLine();
+	printf("JSON Test with: %s\n\n", json);	
+
+    rapidjson::Document document;
+    document.Parse<0>(json);
+
+    printf("value = %s\n", document["value"].GetString());
+
+    assert(document["id"].IsNumber());       // Number is a JSON type, but C++ needs more specific type.
+	assert(document["id"].IsInt());          // In this case, IsUint()/IsInt64()/IsUInt64() also return true.
+    printf("id = %d\n", document["id"].GetInt());
+
+    assert(document["pi"].IsNumber());
+	assert(document["pi"].IsDouble());
+	printf("pi = %g\n", document["pi"].GetDouble());
+
+	assert(document["succeed"].IsBool());         // JSON true/false are bool. Can also uses more specific function IsTrue().
+	printf("succeed = %s\n", document["succeed"].GetBool() ? "true" : "false");
+
+	printf("n = %s\n", document["n"].IsNull() ? "null" : "?");
+
+	const rapidjson::Value& a = document["a"]; // Using a reference for consecutive access is handy and faster.
+	assert(a.IsArray());
+	for (rapidjson::SizeType i = 0; i < a.Size(); i++) // rapidjson uses SizeType instead of size_t.
+    	printf("a[%d] = %d\n", i, a[i].GetInt());
+
+    printLine();
+
+    return 0;
 }
 
 int main()
