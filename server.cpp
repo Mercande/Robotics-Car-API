@@ -1,8 +1,3 @@
-/*
-	gcc -o server server.c
-	./server
-*/
-
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -12,15 +7,21 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Jsons
 #include "rapidjson/include/rapidjson/document.h"
 #include <cstdio>
 
+// Hardware Raspberry
 #include "wiringPi/wiringPi.h"
 
+// Server
 #define MAX_SIZE 900000
 #define PORT 8888
 
-
+// Hardware
+extern const int ID_LED_1			= 1;
+extern const int ID_DISTANCE_1	= 2;
+extern const int ID_DISTANCE_2	= 3;
 
 
 /************************************************************/
@@ -31,16 +32,29 @@ void printLine() {
 	printf("------------------------------------------------\n");
 }
 
-
+int convertBcmToWiring(int pin_bcm) {
+	switch(pin_bcm) {
+		case 18: return 1;
+		case 23: return 4;
+		case 24: return 5;
+		case 25: return 6;
+		case 4: return 7;
+		case 17: return 0;
+		case 22: return 3;
+	}
+	return 1;
+}
 
 
 /************************************************************/
 /**** Hardware functions                                 ****/
 /************************************************************/
 
-int gpio_write_pin(int pin, int on_off) {
-	// TODO
-
+int gpio_write_pin(int pin_bcm, int on_off) {
+	int pin = convertBcmToWiring(pin_bcm);
+	wiringPiSetup () ;
+  	pinMode (pin, OUTPUT) ;
+	digitalWrite (pin, on_off);
 	return 0;
 }
 
@@ -65,44 +79,40 @@ double gpio_read_distance(int device) {
 
 int gpio_write(int id, double value) {
 	switch(id) {
-
 		// LED 1
-		case 1:		
-			gpio_write_pin(18, value);
-		break;
+		case ID_LED_1 :
+		{
+			return gpio_write_pin(18, value);			
+		}
 
 		// DISTANCE 1
-		case 2:
+		case ID_DISTANCE_1: {
 			return -1;
-		break;
+		}
 
 		// DISTANCE 2
-		case 3:
+		case ID_DISTANCE_2: {
 			return -1;
-		break;
-
-		default:
-			// Error
-		return -1;
+		}
 	}
-	return 0;
+	return -1;
 }
 
 double gpio_read(int id) {
 	switch(id) {
 
 		// LED 1
-		case 1:		
+		case ID_LED_1:		
 			return gpio_read_pin(18);
 		break;
 
 		// DISTANCE 1
-		case 2:
+		case ID_DISTANCE_1:
 			// TODO return gpio_read_distance(int device);
 		break;
 
 		// DISTANCE 2
-		case 3:
+		case ID_DISTANCE_2:
 			// TODO return gpio_read_distance(int device);
 		break;
 	}
@@ -137,15 +147,13 @@ int test_hardware() {
 	printLine();
 	printf("TEST : HARDWARE\n\n");	
 
-	wiringPiSetup () ;
-  	pinMode (1, OUTPUT) ;
-
-	digitalWrite (1, HIGH) ; delay (500) ;
-	digitalWrite (1,  LOW) ; delay (500) ;
-	digitalWrite (1, HIGH) ; delay (500) ;
-	digitalWrite (1,  LOW) ; delay (500) ;
-	digitalWrite (1, HIGH) ; delay (500) ;
-	digitalWrite (1,  LOW) ; delay (500) ;
+	int time =  120;
+	for(int i = 0; i< 25; i++) {
+		gpio_write(1, 1);
+		delay(time);
+		gpio_write(1, 0);
+		delay(time);
+	}	
 
 	printf("\n");
 	printLine();
