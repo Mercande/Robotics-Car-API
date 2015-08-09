@@ -15,11 +15,123 @@
 #include "rapidjson/include/rapidjson/document.h"
 #include <cstdio>
 
-#define MAX_SIZE 500000
+#define MAX_SIZE 900000
 #define PORT 8888
+
+
+
+
+/************************************************************/
+/**** Utils                                              ****/
+/************************************************************/
 
 void printLine() {
 	printf("------------------------------------------------\n");
+}
+
+
+
+
+/************************************************************/
+/**** Hardware functions                                 ****/
+/************************************************************/
+
+int gpio_write_pin(int pin, int on_off) {
+	// TODO
+
+	return 0;
+}
+
+double gpio_read_pin(int pin) {
+	// TODO
+
+	return 0;
+}
+
+double gpio_read_distance(int device) {
+	// TODO
+
+	return 0;
+}
+
+
+
+
+/************************************************************/
+/**** Functions called by the server                     ****/
+/************************************************************/
+
+int gpio_write(int id, double value) {
+	switch(id) {
+
+		// LED 1
+		case 1:		
+			gpio_write_pin(18, value);
+		break;
+
+		// DISTANCE 1
+		case 2:
+			return -1;
+		break;
+
+		// DISTANCE 2
+		case 3:
+			return -1;
+		break;
+
+		default:
+			// Error
+		return -1;
+	}
+	return 0;
+}
+
+double gpio_read(int id) {
+	switch(id) {
+
+		// LED 1
+		case 1:		
+			return gpio_read_pin(18);
+		break;
+
+		// DISTANCE 1
+		case 2:
+			// TODO return gpio_read_distance(int device);
+		break;
+
+		// DISTANCE 2
+		case 3:
+			// TODO return gpio_read_distance(int device);
+		break;
+	}
+	return 0;
+}
+
+
+
+/************************************************************/
+/**** JSON Parsing  ****/
+/************************************************************/
+
+int json_parse_body(char* body) {
+	if(body == NULL) {
+		return -1;
+	}
+
+	// TODO
+
+	return 0;
+}
+
+
+
+/************************************************************/
+/**** Test functions called each time the program start  ****/
+/************************************************************/
+
+int test_hardware() {
+
+	return 0;
 }
 
 int test_json() {
@@ -59,10 +171,23 @@ int test_json() {
     return 0;
 }
 
+void test() {
+	test_json();
+	test_hardware();
+}
+
+
+
+
+
+/************************************************************/
+/**** SERVER                                             ****/
+/************************************************************/
+
 int main()
 {
 
-	test_json();
+	test();
 
 	// Two socket descriptors which are just integer numbers used to access a socket
 	int sock_descriptor, conn_desc;
