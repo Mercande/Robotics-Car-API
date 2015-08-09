@@ -15,6 +15,8 @@
 #include "rapidjson/include/rapidjson/document.h"
 #include <cstdio>
 
+#include "wiringPi/wiringPi.h"
+
 #define MAX_SIZE 900000
 #define PORT 8888
 
@@ -131,6 +133,23 @@ int json_parse_body(char* body) {
 
 int test_hardware() {
 
+	printf("\n");
+	printLine();
+	printf("TEST : HARDWARE\n\n");	
+
+	wiringPiSetup () ;
+  	pinMode (1, OUTPUT) ;
+
+	digitalWrite (1, HIGH) ; delay (500) ;
+	digitalWrite (1,  LOW) ; delay (500) ;
+	digitalWrite (1, HIGH) ; delay (500) ;
+	digitalWrite (1,  LOW) ; delay (500) ;
+	digitalWrite (1, HIGH) ; delay (500) ;
+	digitalWrite (1,  LOW) ; delay (500) ;
+
+	printf("\n");
+	printLine();
+
 	return 0;
 }
 
@@ -141,7 +160,7 @@ int test_json() {
 
 	printf("\n");
 	printLine();
-	printf("JSON Test with: %s\n\n", json);	
+	printf("TEST : JSON with: %s\n\n", json);	
 
     rapidjson::Document document;
     document.Parse<0>(json);

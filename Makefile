@@ -1,3 +1,3 @@
 all: 
-	g++ -o server server.cpp
+	g++ -o server server.cpp -lwiringPi
 
