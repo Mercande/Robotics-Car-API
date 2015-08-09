@@ -4,6 +4,7 @@
 */
 
 #include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -14,7 +15,7 @@
 #include "rapidjson/include/rapidjson/document.h"
 #include <cstdio>
 
-#define MAX_SIZE 50000
+#define MAX_SIZE 500000
 #define PORT 8888
 
 void printLine() {
@@ -124,6 +125,32 @@ int main()
 		else
 			printf("Connected\n");
 
+
+		uint16_t networkLen;
+	    read(conn_desc, &networkLen, sizeof(networkLen));
+
+	    uint16_t len = ntohs(networkLen); // convert back to host byte order
+	    if ( read(conn_desc, buff, sizeof(buff) - 1)> 0) {
+
+	    	buff[len] = '\0';
+	    	printf("Received %u : %s\n", len, buff);
+
+			// The new descriptor can be simply read from / written up just like a normal file descriptor
+			if ( write(conn_desc, buff, len-1) > 0)
+				printf("Written %s", buff);
+			else
+				printf("Failed writing\n");
+		}
+		else
+			printf("Failed receiving\n");
+
+
+	    
+
+	    
+
+		/*
+
 		// The new descriptor can be simply read from / written up just like a normal file descriptor
 		if ( read(conn_desc, buff, sizeof(buff)-1) > 0) {
 			printf("Received %s", buff);
@@ -136,6 +163,8 @@ int main()
 		}
 		else
 			printf("Failed receiving\n");
+
+		*/
 
 		printf("\n");
 
