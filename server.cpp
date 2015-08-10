@@ -25,7 +25,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <time.h>
 
 // Jsons
@@ -48,9 +48,11 @@
 #define PORT 8888
 
 // Hardware
-extern const int ID_LED_1			= 1;
+extern const int ID_LED_1		= 1;
 extern const int ID_DISTANCE_1	= 2;
 extern const int ID_DISTANCE_2	= 3;
+
+using std::string; 
 
 
 /************************************************************/
@@ -163,7 +165,7 @@ double gpio_read(int id) {
 
 
 /************************************************************/
-/**** JSON Parsing  ****/
+/**** Request Parsing                                    ****/
 /************************************************************/
 
 int json_parse_body(char* body) {
@@ -176,6 +178,24 @@ int json_parse_body(char* body) {
 	return 0;
 }
 
+int get_body_length(int request_length, char* request) {
+	if(request == NULL) {
+		return -1;
+	}
+
+	char * pch;
+	printf ("Splitting string \"%s\" into tokens:\n",request);
+	pch = strtok (request,"Content");
+	while (pch != NULL)
+	{
+		printf ("%s\n",pch);
+		pch = strtok (NULL, " ,.-");
+	}
+
+	// TODO
+
+	return 0;
+}
 
 
 
@@ -330,7 +350,17 @@ int main()
 	    if ( read(conn_desc, buff, sizeof(buff) - 1)> 0) {
 
 	    	buff[len] = '\0';
-	    	printf("Received %u : %s\n", len, buff);
+
+
+
+
+	    	int body_len = get_body_length(len, buff);
+
+	    	printf("Received Request (len:%u, body_len:%d)\n", len, body_len);
+	    	printf("%s\n", buff);
+
+
+
 
 			// The new descriptor can be simply read from / written up just like a normal file descriptor
 			if ( write(conn_desc, buff, len-1) > 0)
