@@ -51,6 +51,8 @@
 extern const int ID_LED_1		= 1;
 extern const int ID_DISTANCE_1	= 2;
 extern const int ID_DISTANCE_2	= 3;
+extern const int ID_SERVO_1		= 4;
+extern const int ID_SERVO_2	= 5;
 
 using std::string; 
 
@@ -116,6 +118,18 @@ double gpio_read_distance(int device) {
 	return 0;
 }
 
+double i2c() {
+
+	// appel script python
+	//Py_Initialize();
+	//PyRun_SimpleString("import sys; sys.path.append('.')");
+	////PyRun_SimpleString("from mytest import pgm_python");
+	//PyRun_SimpleString("pgm_python");
+	//exec("print 'coucou'"); // affiche coucou
+	//Py_Finalize();
+
+}
+
 
 /************************************************************/
 /**** Functions called by the server                     ****/
@@ -147,17 +161,22 @@ double gpio_read(int id) {
 		// LED 1
 		case ID_LED_1:		
 			return gpio_read_pin(18);
-		break;
 
 		// DISTANCE 1
 		case ID_DISTANCE_1:
-			// TODO return gpio_read_distance(int device);
-		break;
+			return gpio_read_distance(1);
 
 		// DISTANCE 2
 		case ID_DISTANCE_2:
-			// TODO return gpio_read_distance(int device);
-		break;
+			return gpio_read_distance(2);
+
+		// SERVO 1
+		case ID_SERVO_1:
+			return gpio_read_servo(1);
+
+		// SERVO 2
+		case ID_SERVO_2:
+			return gpio_read_servo(2);
 	}
 	return 0;
 }
@@ -219,7 +238,7 @@ int test_hardware() {
 	printLine();
 	printf("TEST : HARDWARE\n\n");	
 
-   	// clignotement LED
+   // clignotement LED
 	int time =  200;
 	for(int i = 0; i< 25; i++) {
 		gpio_write(1, 1);
@@ -227,6 +246,8 @@ int test_hardware() {
 		gpio_write(1, 0);
 		delay(time);
 	}
+
+	gpio_read(ID_DISTANCE_1);
 
 	printf("\n");
 	printLine();
