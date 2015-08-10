@@ -188,7 +188,7 @@ int test_hardware() {
 	printLine();
 	printf("TEST : HARDWARE\n\n");	
 
-	int time =  125;
+	int time =  200;
 	for(int i = 0; i< 25; i++) {
 		gpio_write(1, 1);
 		delay(time);
