@@ -1,13 +1,25 @@
 OS:=$(shell uname)
-OPT:=
+HARDWARE_OPTION:=
+CC:=g++
 
 ifeq ($(OS),Darwin)
-	OPT:=
+	HARDWARE_OPTION:=
 else
-	OPT:=-lwiringPi
+	HARDWARE_OPTION:=-lwiringPi
 endif
 
-all:
+all: server
+
+server: server.o hardware.o
 	@echo "Compile for OS $(OS)..."
-	g++ -o server server.cpp $(OPT)
-	
+	$(CC) -o server server.o hardware.o
+
+server.o: server.cpp hardware.h
+	$(CC) -c server.cpp
+
+hardware.o: hardware.cpp
+	$(CC) -c hardware.cpp	$(HARDWARE_OPTION)
+
+clean:
+	rm *o server.o
+	rm *o hardware.o

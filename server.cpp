@@ -31,12 +31,8 @@
 #include "rapidjson/include/rapidjson/document.h"
 #include <cstdio>
 
-// Hardware Raspberry
-#include "wiringPi/wiringPi.h"
-#include "wiringPi/wiringPiI2C.h"
-
-//Run python sudo apt-get install python-dev
-#include "/usr/include/python2.7/Python.h"
+// Hardware
+#include "hardware.h"
 
 // Server
 #define MAX_SIZE 900000
@@ -68,33 +64,6 @@ int convertBcmToWiring(int pin_bcm) {
 	}
 	return 1;
 }
-
-
-/************************************************************/
-/**** Hardware functions                                 ****/
-/************************************************************/
-
-int gpio_write_pin(int pin_bcm, int on_off) {
-	int pin = convertBcmToWiring(pin_bcm);
-	wiringPiSetup () ;
-  	pinMode (pin, OUTPUT) ;
-	digitalWrite (pin, on_off);
-	return 0;
-}
-
-double gpio_read_pin(int pin) {
-	// TODO
-
-	return 0;
-}
-
-double gpio_read_distance(int device) {
-	// TODO
-
-	return 0;
-}
-
-
 
 
 /************************************************************/
@@ -174,9 +143,9 @@ int test_hardware() {
 	int time =  120;
 	for(int i = 0; i< 25; i++) {
 		gpio_write(1, 1);
-		delay(time);
+		sleep(time);
 		gpio_write(1, 0);
-		delay(time);
+		sleep(time);
 	}	
 
 	printf("\n");

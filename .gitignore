@@ -1,5 +1,7 @@
-# exe
+# Robotics compilation files
 server
+server.o
+hardware.o
 
 # C extensions
 *.so
