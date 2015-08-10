@@ -1,3 +1,23 @@
+/**
+ * This file is part of Robotics-Car-API, RestAPI on RaspberryPi B+.
+ *
+ * Copyright (c) 2015 Robotics-Car-API contributors (http://mercandalli.com)
+ *
+ * LICENSE:
+ *
+ * Robotics-Car-API is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any
+ * later version.
+ *
+ * Robotics-Car-API is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * @author E.Mercandalli J.Mercandalli
+ * @license http://www.gnu.org/licenses/gpl.html
+ * @copyright 2015 Robotics-Car-API contributors (http://mercandalli.com)
+ */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
@@ -13,6 +33,10 @@
 
 // Hardware Raspberry
 #include "wiringPi/wiringPi.h"
+#include "wiringPi/wiringPiI2C.h"
+
+//Run python sudo apt-get install python-dev
+#include "/usr/include/python2.7/Python.h"
 
 // Server
 #define MAX_SIZE 900000
