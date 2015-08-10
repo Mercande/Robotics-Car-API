@@ -247,9 +247,20 @@ int json_parse_body(char* body) {
 		return -1;
 	}
 
-	// TODO
 	rapidjson::Document document;
     document.Parse<0>(body);
+
+    if(document.HasMember("debug")) {
+    	printf("debug = %s\n", document["debug"].GetString());
+    }
+
+    if(document.HasMember("succeed")) {
+		if(document["succeed"].IsBool()) {
+			printf("succeed = %s\n", document["succeed"].GetBool() ? "true" : "false");
+		}
+    }
+
+    // TODO
 
 	return 0;
 }
@@ -291,19 +302,19 @@ int test_hardware() {
 
 	printf("\n");
 	printLine();
-	printf("TEST : HARDWARE\n\n");	
+	printf("TEST : HARDWARE\n\n");
 
-   // clignotement LED
-	int time =  80;
-	for(int i = 0; i< 15; i++) {
+	gpio_read(ID_DISTANCE_1);
+	gpio_write(ID_SERVO_1, 3.14);
+
+	// clignotement LED
+	int time =  70;
+	for(int i = 0; i< 12; i++) {
 		gpio_write(1, 1);
 		delay(time);
 		gpio_write(1, 0);
 		delay(time);
 	}
-
-	gpio_read(ID_DISTANCE_1);
-	gpio_write(ID_DISTANCE_1, 3.14);
 
 	printf("\n");
 	printLine();
