@@ -114,7 +114,7 @@ double gpio_read_pin(int pin) {
 
 double i2c_read() {
 
-	printf("Test i2c_read TODO");
+	printf("Test i2c_read TODO\n");
 
 	// TODO Eric
 	// add param to have a generic function
@@ -134,7 +134,7 @@ double i2c_read() {
 
 int i2c_write(double value) {
 
-	printf("Test i2c_write TODO");
+	printf("Test i2c_write TODO\n");
 
 	// TODO Eric
 	// add param to have a generic function
