@@ -112,13 +112,10 @@ double gpio_read_pin(int pin) {
 	return 0;
 }
 
-double gpio_read_distance(int device) {
-	// TODO
-
-	return 0;
-}
-
-double i2c() {
+double i2c_read() {
+	// TODO Eric
+	// add param to have a generic function
+	// return value
 
 	// appel script python
 	//Py_Initialize();
@@ -128,7 +125,51 @@ double i2c() {
 	//exec("print 'coucou'"); // affiche coucou
 	//Py_Finalize();
 
+	return 0;
 }
+
+
+int i2c_write(double value) {
+	// TODO Eric
+	// add param to have a generic function
+	// return 0 => all is good, return -1 error
+
+	// appel script python
+	//Py_Initialize();
+	//PyRun_SimpleString("import sys; sys.path.append('.')");
+	////PyRun_SimpleString("from mytest import pgm_python");
+	//PyRun_SimpleString("pgm_python");
+	//exec("print 'coucou'"); // affiche coucou
+	//Py_Finalize();
+
+	return 0;
+}
+
+double gpio_read_distance(int device) {
+	switch(device) {
+		case 1:	return i2c_read(); // TODO Eric i2c_read(param); add param ???
+		case 2: return i2c_read(); // TODO Eric i2c_read(param); add param ???
+	}
+	return 0;
+}
+
+double gpio_read_servo(int device) {
+	switch(device) {
+		case 1:	return i2c_read(); // TODO Eric i2c_read(param); add param ???
+		case 2: return i2c_read(); // TODO Eric i2c_read(param); add param ???
+	}
+	return 0;
+}
+
+int gpio_write_servo(int device, double value) {
+	switch(device) {
+		case 1:	return i2c_write(value); // TODO Eric i2c_write(param); add param ???
+		case 2: return i2c_write(value); // TODO Eric i2c_write(param); add param ???
+	}
+	return 0;
+}
+
+
 
 
 /************************************************************/
@@ -151,6 +192,14 @@ int gpio_write(int id, double value) {
 		case ID_DISTANCE_2: {
 			return -1;
 		}
+
+		// SERVO 1
+		case ID_SERVO_1:
+			return gpio_write_servo(1, value);
+
+		// SERVO 2
+		case ID_SERVO_2:
+			return gpio_write_servo(2, value);
 	}
 	return -1;
 }
