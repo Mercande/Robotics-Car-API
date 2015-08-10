@@ -174,27 +174,37 @@ int json_parse_body(char* body) {
 	}
 
 	// TODO
+	rapidjson::Document document;
+    document.Parse<0>(body);
 
 	return 0;
 }
 
-int get_body_length(int request_length, char* request) {
+int get_body_length(char* request) {
 	if(request == NULL) {
 		return -1;
 	}
+	char * pch = strstr(request,"Content-Length: ");
+	strtok(pch," ");
+	return atoi(strtok (NULL, " "));
+}
 
-	char * pch;
-	printf ("Splitting string \"%s\" into tokens:\n",request);
-	pch = strtok (request,"Content");
-	while (pch != NULL)
-	{
-		printf ("%s\n",pch);
-		pch = strtok (NULL, " ,.-");
+char* get_body(int len, char* request) {
+	int length = get_body_length(request);
+	char result[length+1];
+
+	int request_length = len;
+	for(int i = 300 ; i < len ; i++ ) {
+		request_length = i;
+		if(request[i] == '\0')
+			break;
 	}
+	for(int i = 1 ; i <= length ; i++ ) {
+		result[length - i] = request[request_length - i];
+	}
+	result[length] = '\0';
 
-	// TODO
-
-	return 0;
+	return result;
 }
 
 
@@ -351,20 +361,19 @@ int main()
 
 	    	buff[len] = '\0';
 
+	    	//printf("Received Request (len:%u, body_len:%d)\n", len, body_len);
+	    	//printf("%s\n", buff);
 
 
-
-	    	int body_len = get_body_length(len, buff);
-
-	    	printf("Received Request (len:%u, body_len:%d)\n", len, body_len);
-	    	printf("%s\n", buff);
-
-
+	    	char* body = get_body(len, buff);
+	    	printf("Body : %s\n", body);
+	    	json_parse_body(body);
 
 
 			// The new descriptor can be simply read from / written up just like a normal file descriptor
-			if ( write(conn_desc, buff, len-1) > 0)
-				printf("Written %s", buff);
+			if ( write(conn_desc, buff, len-1) > 0) {
+				//printf("Written %s", buff);
+			}
 			else
 				printf("Failed writing\n");
 		}
