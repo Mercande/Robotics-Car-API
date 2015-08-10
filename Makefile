@@ -4,7 +4,7 @@ OPT:=
 ifeq ($(OS),Darwin)
 	OPT:=
 else
-	OPT:="-lwiringPi"
+	OPT:=-lwiringPi
 endif
 
 all:
