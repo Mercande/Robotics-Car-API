@@ -180,9 +180,9 @@ int test_hardware() {
 	int time =  125;
 	for(int i = 0; i< 25; i++) {
 		gpio_write(1, 1);
-		delay(time);
+		usleep(time);
 		gpio_write(1, 0);
-		delay(time);
+		usleep(time);
 	}	
 
 	printf("\n");
