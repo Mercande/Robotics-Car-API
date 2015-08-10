@@ -26,6 +26,7 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // Jsons
 #include "rapidjson/include/rapidjson/document.h"
@@ -71,6 +72,16 @@ int convertBcmToWiring(int pin_bcm) {
 		case 22: return 3;
 	}
 	return 1;
+}
+
+void delay (unsigned int howLong)
+{
+  struct timespec sleeper, dummy ;
+
+  sleeper.tv_sec  = (time_t)(howLong / 1000) ;
+  sleeper.tv_nsec = (long)(howLong % 1000) * 1000000 ;
+
+  nanosleep (&sleeper, &dummy) ;
 }
 
 
@@ -180,9 +191,9 @@ int test_hardware() {
 	int time =  125;
 	for(int i = 0; i< 25; i++) {
 		gpio_write(1, 1);
-		usleep(time);
+		delay(time);
 		gpio_write(1, 0);
-		usleep(time);
+		delay(time);
 	}	
 
 	printf("\n");
