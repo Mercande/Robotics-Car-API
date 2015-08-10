@@ -8,7 +8,7 @@ else
 	HARDWARE_OPTION:=-lwiringPi
 endif
 
-all: server
+all: server clean
 
 server: server.o hardware.o
 	@echo "Compile for OS $(OS)..."
@@ -21,5 +21,5 @@ hardware.o: hardware.cpp
 	$(CC) -c hardware.cpp	$(HARDWARE_OPTION)
 
 clean:
-	rm *o server.o
-	rm *o hardware.o
+	rm -f *o server.o
+	rm -f *o hardware.o
