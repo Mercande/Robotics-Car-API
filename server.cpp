@@ -39,7 +39,7 @@
 	#include "wiringPi/wiringPiI2C.h"
 
 	//Run python sudo apt-get install python-dev
-	#include </usr/include/python2.7/Python.h>
+	#include "/usr/include/python2.7/Python.h"
 #endif
 
 
@@ -219,7 +219,7 @@ int test_hardware() {
 	printLine();
 	printf("TEST : HARDWARE\n\n");	
 
-   // clignotement LED
+   	// clignotement LED
 	int time =  200;
 	for(int i = 0; i< 25; i++) {
 		gpio_write(1, 1);
@@ -227,14 +227,6 @@ int test_hardware() {
 		gpio_write(1, 0);
 		delay(time);
 	}
-
-   // appel script python
-   //Py_Initialize();
-   //PyRun_SimpleString("import sys; sys.path.append('.')");
-   ////PyRun_SimpleString("from mytest import pgm_python");
-   //PyRun_SimpleString("pgm_python");
-   //exec("print 'coucou'"); // affiche coucou
-   //Py_Finalize();
 
 	printf("\n");
 	printLine();
