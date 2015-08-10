@@ -178,6 +178,7 @@ int json_parse_body(char* body) {
 
 
 
+
 /************************************************************/
 /**** Test functions called each time the program start  ****/
 /************************************************************/
@@ -241,7 +242,10 @@ int test_json() {
 
 void test() {
 	test_json();
-	test_hardware();
+	#ifdef __APPLE__
+	#else
+		test_hardware();
+	#endif
 }
 
 
@@ -336,28 +340,6 @@ int main()
 		}
 		else
 			printf("Failed receiving\n");
-
-
-	    
-
-	    
-
-		/*
-
-		// The new descriptor can be simply read from / written up just like a normal file descriptor
-		if ( read(conn_desc, buff, sizeof(buff)-1) > 0) {
-			printf("Received %s", buff);
-
-			// The new descriptor can be simply read from / written up just like a normal file descriptor
-			if ( write(conn_desc, buff, sizeof(buff)-1) > 0)
-				printf("Written %s", buff);
-			else
-				printf("Failed writing\n");
-		}
-		else
-			printf("Failed receiving\n");
-
-		*/
 
 		printf("\n");
 
