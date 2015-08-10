@@ -113,6 +113,9 @@ double gpio_read_pin(int pin) {
 }
 
 double i2c_read() {
+
+	printf("Test i2c_read TODO");
+
 	// TODO Eric
 	// add param to have a generic function
 	// return value
@@ -130,6 +133,9 @@ double i2c_read() {
 
 
 int i2c_write(double value) {
+
+	printf("Test i2c_write TODO");
+
 	// TODO Eric
 	// add param to have a generic function
 	// return 0 => all is good, return -1 error
@@ -297,6 +303,7 @@ int test_hardware() {
 	}
 
 	gpio_read(ID_DISTANCE_1);
+	gpio_write(ID_DISTANCE_1, 3.14);
 
 	printf("\n");
 	printLine();
