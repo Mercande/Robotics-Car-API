@@ -31,8 +31,16 @@
 #include "rapidjson/include/rapidjson/document.h"
 #include <cstdio>
 
-// Hardware
-#include "hardware.h"
+//Hardware Raspberry
+#ifdef __APPLE__
+#else
+	#include "wiringPi/wiringPi.h"
+	#include "wiringPi/wiringPiI2C.h"
+
+	//Run python sudo apt-get install python-dev
+	#include "/usr/include/python2.7/Python.h"
+#endif
+
 
 // Server
 #define MAX_SIZE 900000
@@ -67,14 +75,43 @@ int convertBcmToWiring(int pin_bcm) {
 
 
 /************************************************************/
+/**** Hardware functions                                 ****/
+/************************************************************/
+
+int gpio_write_pin(int pin_bcm, int on_off) {
+
+	#ifdef __APPLE__
+	#else
+		int pin = convertBcmToWiring(pin_bcm);
+		wiringPiSetup() ;
+	  	pinMode(pin, OUTPUT) ;
+		digitalWrite(pin, on_off);
+	#endif
+
+	return 0;
+}
+
+double gpio_read_pin(int pin) {
+	// TODO
+
+	return 0;
+}
+
+double gpio_read_distance(int device) {
+	// TODO
+
+	return 0;
+}
+
+
+/************************************************************/
 /**** Functions called by the server                     ****/
 /************************************************************/
 
 int gpio_write(int id, double value) {
 	switch(id) {
 		// LED 1
-		case ID_LED_1 :
-		{
+		case ID_LED_1 : {
 			return gpio_write_pin(18, value);			
 		}
 
@@ -140,12 +177,12 @@ int test_hardware() {
 	printLine();
 	printf("TEST : HARDWARE\n\n");	
 
-	int time =  120;
+	int time =  125;
 	for(int i = 0; i< 25; i++) {
 		gpio_write(1, 1);
-		sleep(time);
+		delay(time);
 		gpio_write(1, 0);
-		sleep(time);
+		delay(time);
 	}	
 
 	printf("\n");
