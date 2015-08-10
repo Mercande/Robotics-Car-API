@@ -242,23 +242,37 @@ double gpio_read(int id) {
 /**** Request Parsing                                    ****/
 /************************************************************/
 
-int json_parse_body(char* body) {
+int json_parse_body(int len_body, const char* body) {
+
 	if(body == NULL) {
 		return -1;
 	}
 
-	rapidjson::Document document;
-    document.Parse<0>(body);
+	if(body[0] != '{') {
+		return -1;
+	}
 
-    if(document.HasMember("debug")) {
-    	printf("debug = %s\n", document["debug"].GetString());
+	rapidjson::Document json;
+
+	char tmp[len_body];
+	for(int i=0 ; i<len_body ; i++)
+		tmp[i] = body[i];
+	
+	if (json.Parse<0>(body).HasParseError()) {
+		printf("Error parsing (1) : %s\n", body);
+		return -1;
+	}
+
+    if(json.HasMember("debug")) {
+    	printf("debug = %s\n", json["debug"].GetString());
     }
 
-    if(document.HasMember("succeed")) {
-		if(document["succeed"].IsBool()) {
-			printf("succeed = %s\n", document["succeed"].GetBool() ? "true" : "false");
+    if(json.HasMember("succeed")) {
+		if(json["succeed"].IsBool()) {
+			printf("succeed = %s\n", json["succeed"].GetBool() ? "true" : "false");
 		}
     }
+    
 
     // TODO
 
@@ -274,8 +288,7 @@ int get_body_length(char* request) {
 	return atoi(strtok (NULL, " "));
 }
 
-char* get_body(int len, char* request) {
-	int length = get_body_length(request);
+char* get_body(int len, char* request, int length) {	
 	char result[length+1];
 
 	int request_length = len;
@@ -452,10 +465,15 @@ int main()
 	    	//printf("Received Request (len:%u, body_len:%d)\n", len, body_len);
 	    	//printf("%s\n", buff);
 
+	    	int length_body = get_body_length(buff);
+	    	char* body = (char*)malloc(length_body*sizeof(char));
 
-	    	char* body = get_body(len, buff);
+
+	    	strcpy(body, get_body(len, buff, length_body));
+
+
 	    	printf("Body : %s\n", body);
-	    	json_parse_body(body);
+	    	json_parse_body(length_body, body);
 
 
 			// The new descriptor can be simply read from / written up just like a normal file descriptor
