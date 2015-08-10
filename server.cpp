@@ -288,8 +288,8 @@ int test_hardware() {
 	printf("TEST : HARDWARE\n\n");	
 
    // clignotement LED
-	int time =  200;
-	for(int i = 0; i< 25; i++) {
+	int time =  80;
+	for(int i = 0; i< 15; i++) {
 		gpio_write(1, 1);
 		delay(time);
 		gpio_write(1, 0);
@@ -359,7 +359,6 @@ void test() {
 
 int main()
 {
-
 	test();
 
 	// Two socket descriptors which are just integer numbers used to access a socket
