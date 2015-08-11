@@ -38,9 +38,6 @@
 #else
 	#include "wiringPi/wiringPi.h"
 	#include "wiringPi/wiringPiI2C.h"
-
-	//Run python sudo apt-get install python-dev
-	#include "/usr/include/python2.7/Python.h"
 #endif
 
 
@@ -347,16 +344,23 @@ int get_body_length(char* request) {
 	if(request == NULL) {
 		return -1;
 	}
-	char * pch = strstr(request,"Content-Length: ");	
-	strtok(pch," ");
-	int result = atoi(strtok (NULL, " "));
 
-	if(result!=0)
-		return result;
+	string request_str(request);
+	string content_length_str_1("Content-Length: ");
+	string content_length_str_2("Content-length: ");
 
-	char * pch2 = strstr(request,"Content-length: ");
-	strtok(pch2," ");
-	return atoi(strtok (NULL, " "));
+	if(request_str.find(content_length_str_1) != std::string::npos) {
+		char * pch = strstr(request,"Content-Length: ");
+		strtok(pch," ");
+		return atoi(strtok (NULL, " "));
+	}
+	else if(request_str.find(content_length_str_2) != std::string::npos) {
+		char * pch = strstr(request,"Content-length: ");
+		strtok(pch," ");
+		return atoi(strtok (NULL, " "));
+	}
+
+	return 0;
 }
 
 int get_body(int len, char* request, int length_body, char* body) {
@@ -530,7 +534,15 @@ int main()
 		if ( read(conn_desc, buff, sizeof(buff) - 1)> 0) {
 
 	    	//buff[len] = '\0';
+
+
+			printf("\nReq : %s\n\n\n", buff);
+
 	    	int length_body = get_body_length(buff);
+
+			printf("\nReq length_body : %d\n\n\n", length_body);
+
+
 	    	char* body = (char*)malloc((length_body+1)*sizeof(char));
 
 			printf("\nReq : %s\n\n\nReceived Request (len:%u, length_body:%d)\n\n\n\n", buff, len, length_body);
