@@ -52,7 +52,10 @@ extern const int ID_DISTANCE_2	= 3;
 extern const int ID_SERVO_1		= 4;
 extern const int ID_SERVO_2		= 5;
 
-using std::string; 
+using std::string;
+
+
+int var_gl_fd;
 
 
 /************************************************************/
@@ -241,31 +244,39 @@ int gpio_write(int id, double value) {
 }
 
 double gpio_read(int id) {
-	printf("gpio_read(id=%d)\n", id);
+	double result = 0;
 
 	switch(id) {
 
 		// LED 1
 		case ID_LED_1:		
-			return gpio_read_pin(18);
+			result = gpio_read_pin(18);
+		break;
 
 		// DISTANCE 1
 		case ID_DISTANCE_1:
-			return gpio_read_distance(1);
+			result = gpio_read_distance(1);
+		break;
 
 		// DISTANCE 2
 		case ID_DISTANCE_2:
-			return gpio_read_distance(2);
+			result = gpio_read_distance(2);
+		break;
 
 		// SERVO 1
 		case ID_SERVO_1:
-			return gpio_read_servo(1);
+			result = gpio_read_servo(1);
+		break;
 
 		// SERVO 2
 		case ID_SERVO_2:
-			return gpio_read_servo(2);
+			result = gpio_read_servo(2);
+		break;
 	}
-	return 0;
+
+	printf("gpio_read(id=%d)  =  %lf\n", id, result);
+
+	return result;
 }
 
 
