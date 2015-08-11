@@ -351,11 +351,10 @@ int get_body_length(char* request) {
 	if(request == NULL) {
 		return -1;
 	}
-	printf("COUCOU (11) request=%s\n", request);
 	char * pch = strstr(request,"Content-length: ");
-	printf("COUCOU (12) pch=%s\n", pch);
+	if(sizeof(pch)==0)
+		pch = strstr(request,"Content-Length: ");
 	strtok(pch," ");
-	printf("COUCOU (13) pch=%s\n", pch);
 	return atoi(strtok (NULL, " "));
 }
 
@@ -528,19 +527,11 @@ int main()
 		uint16_t networkLen;
 		read(conn_desc, &networkLen, sizeof(networkLen));
 
-		printf("COUCOU (0)\n");
-
 		uint16_t len = ntohs(networkLen); // convert back to host byte order
 		if ( read(conn_desc, buff, sizeof(buff) - 1)> 0) {
 
 	    	buff[len] = '\0';
-
-			printf("COUCOU (1)\n");
-
 	    	int length_body = get_body_length(buff);
-
-			printf("COUCOU (2) %d\n", length_body);
-
 	    	char* body = (char*)malloc(length_body*sizeof(char));
 
 			printf("Received Request (len:%u, length_body:%d)\n", len, length_body);
