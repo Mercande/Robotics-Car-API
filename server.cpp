@@ -133,65 +133,28 @@ double gpio_read_pin(int pin_bcm) {
 	return -1;
 }
 
-double i2c_read() {
-
-	printf("Test i2c_read TODO\n");
-
-	// TODO Eric
-	// add param to have a generic function
-	// return value
-
-	// appel script python
-	//Py_Initialize();
-	//PyRun_SimpleString("import sys; sys.path.append('.')");
-	////PyRun_SimpleString("from mytest import pgm_python");
-	//PyRun_SimpleString("pgm_python");
-	//exec("print 'coucou'"); // affiche coucou
-	//Py_Finalize();
-
+double i2c_read_distance(int ad) {
+	// TODO ERIC
 	return 0;
 }
 
-
-int i2c_write(double value) {
-
-	printf("Test i2c_write TODO\n");
-
-	// TODO Eric
-	// add param to have a generic function
-	// return 0 => all is good, return -1 error
-
-	// appel script python
-	//Py_Initialize();
-	//PyRun_SimpleString("import sys; sys.path.append('.')");
-	////PyRun_SimpleString("from mytest import pgm_python");
-	//PyRun_SimpleString("pgm_python");
-	//exec("print 'coucou'"); // affiche coucou
-	//Py_Finalize();
-
+int i2c_write_servo(int ad, int id_pwm, double value) {
+	// TODO ERIC
 	return 0;
 }
 
 double gpio_read_distance(int device) {
 	switch(device) {
-		case 1:	return i2c_read(); // TODO Eric i2c_read(param); add param ???
-		case 2: return i2c_read(); // TODO Eric i2c_read(param); add param ???
-	}
-	return 0;
-}
-
-double gpio_read_servo(int device) {
-	switch(device) {
-		case 1:	return i2c_read(); // TODO Eric i2c_read(param); add param ???
-		case 2: return i2c_read(); // TODO Eric i2c_read(param); add param ???
+		case 1:	return i2c_read_distance(0x71);
+		case 2: return i2c_read_distance(0x72);
 	}
 	return 0;
 }
 
 int gpio_write_servo(int device, double value) {
 	switch(device) {
-		case 1:	return i2c_write(value); // TODO Eric i2c_write(param); add param ???
-		case 2: return i2c_write(value); // TODO Eric i2c_write(param); add param ???
+		case 1:	return i2c_write_servo(0x40, 1, value);
+		case 2: return i2c_write_servo(0x40, 16, value);
 	}
 	return 0;
 }
@@ -265,12 +228,12 @@ double gpio_read(int id) {
 
 		// SERVO 1
 		case ID_SERVO_1:
-			result = gpio_read_servo(1);
+			result = -1;
 		break;
 
 		// SERVO 2
 		case ID_SERVO_2:
-			result = gpio_read_servo(2);
+			result = -1;
 		break;
 	}
 
@@ -431,21 +394,25 @@ int test_hardware() {
 	printLine();
 	printf("TEST : HARDWARE\n\n");
 
-	gpio_read(ID_DISTANCE_1);
-	gpio_write(ID_SERVO_1, 3.14);
-
 	// clignotement LED
-	int time =  70;
-	for(int i = 0; i< 12; i++) {
+	int time =  100;
+	for(int i = 0; i< 3; i++) {
 		gpio_write(1, 1);
 		assert(1 == gpio_read(1));
 		delay(time);
+		printf("\n");
+
 		gpio_write(1, 0);
 		assert(0 == gpio_read(1));
 		delay(time);
+		printf("\n");
 	}
 
+	gpio_read(ID_DISTANCE_1);
+	gpio_write(ID_SERVO_1, 3.14);
+
 	printf("\n");
+
 	printLine();
 
 	return 0;
