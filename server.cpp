@@ -264,10 +264,6 @@ int json_parse_body(int len_body, const char* body) {
 	}
 
 	rapidjson::Document json;
-
-	char tmp[len_body];
-	for(int i=0 ; i<len_body ; i++)
-		tmp[i] = body[i];
 	
 	if (json.Parse<0>(body).HasParseError()) {
 		printf("Error parsing (1) : %s\n", body);
@@ -363,8 +359,7 @@ int get_body_length(char* request) {
 	return atoi(strtok (NULL, " "));
 }
 
-char* get_body(int len, char* request, int length) {	
-	char result[length+1];
+int get_body(int len, char* request, int length_body, char* body) {
 
 	int request_length = len;
 	for(int i = 300 ; i < len ; i++ ) {
@@ -372,12 +367,12 @@ char* get_body(int len, char* request, int length) {
 		if(request[i] == '\0')
 			break;
 	}
-	for(int i = 1 ; i <= length ; i++ ) {
-		result[length - i] = request[request_length - i];
+	for(int i = 1 ; i <= length_body ; i++ ) {
+		body[length_body - i] = request[request_length - i];
 	}
-	result[length] = '\0';
+	body[length_body] = '\0';
 
-	return result;
+	return 0;
 }
 
 
@@ -536,11 +531,11 @@ int main()
 
 	    	//buff[len] = '\0';
 	    	int length_body = get_body_length(buff);
-	    	char* body = (char*)malloc(length_body*sizeof(char));
+	    	char* body = (char*)malloc((length_body+1)*sizeof(char));
 
 			printf("\nReq : %s\n\n\nReceived Request (len:%u, length_body:%d)\n\n\n\n", buff, len, length_body);
 
-	    	strcpy(body, get_body(len, buff, length_body));
+	    	get_body(len, buff, length_body, body);
 
 	    	printf("Body : %s\n", body);
 	    	json_parse_body(length_body, body);
