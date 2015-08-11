@@ -52,7 +52,7 @@ extern const int ID_LED_1		= 1;
 extern const int ID_DISTANCE_1	= 2;
 extern const int ID_DISTANCE_2	= 3;
 extern const int ID_SERVO_1		= 4;
-extern const int ID_SERVO_2	= 5;
+extern const int ID_SERVO_2		= 5;
 
 using std::string; 
 
@@ -183,7 +183,10 @@ int gpio_write_servo(int device, double value) {
 /************************************************************/
 
 int gpio_write(int id, double value) {
+	printf("gpio_write(id=%d, value=%lf)\n", id, value);
+
 	switch(id) {
+
 		// LED 1
 		case ID_LED_1 : {
 			return gpio_write_pin(18, value);			
@@ -211,6 +214,8 @@ int gpio_write(int id, double value) {
 }
 
 double gpio_read(int id) {
+	printf("gpio_read(id=%d)\n", id);
+
 	switch(id) {
 
 		// LED 1
@@ -244,6 +249,11 @@ double gpio_read(int id) {
 
 int json_parse_body(int len_body, const char* body) {
 
+	/*
+	EX
+	{"succeed":true,"toast":"Test toast","debug":"on\/off led","content":{"user":{"id":1,"username":"Jonathan"},"date_request":"2015-08-11 09:53:55","hardware":[{"id":1,"read":false,"value":"1","type":"led","succeed":true}],"init_hardware":false}}
+	*/
+
 	if(body == NULL) {
 		return -1;
 	}
@@ -263,16 +273,73 @@ int json_parse_body(int len_body, const char* body) {
 		return -1;
 	}
 
-    if(json.HasMember("debug")) {
-    	printf("debug = %s\n", json["debug"].GetString());
-    }
-
-    if(json.HasMember("succeed")) {
+	if(json.HasMember("succeed")) {
 		if(json["succeed"].IsBool()) {
 			printf("succeed = %s\n", json["succeed"].GetBool() ? "true" : "false");
 		}
     }
-    
+
+    if(json.HasMember("toast")) {
+    	printf("toast = %s\n", json["toast"].GetString());
+    }
+
+    if(json.HasMember("debug")) {
+    	printf("debug = %s\n", json["debug"].GetString());
+    }   
+
+    if(json.HasMember("content")) {
+
+    	const rapidjson::Value& content = json["content"];
+
+    	if(content.HasMember("date_request")) {
+	    	printf("date_request = %s\n", content["date_request"].GetString());
+	    }
+
+	    if(content.HasMember("hardware")) {
+	    	const rapidjson::Value& hardware = content["hardware"]; // Using a reference for consecutive access is handy and faster.
+			if(hardware.IsArray()) {
+
+				for (rapidjson::SizeType i = 0; i < hardware.Size(); i++) { // rapidjson uses SizeType instead of size_t.
+			    	
+					const rapidjson::Value& current_hardware = hardware[i];
+
+					
+					if(current_hardware.HasMember("id")) {
+						int current_hardware_id = current_hardware["id"].GetInt();
+
+						
+						if(current_hardware.HasMember("read")) {
+							if(current_hardware["read"].IsBool()) {
+
+								
+								if(current_hardware["read"].GetBool()) {
+
+									gpio_read(current_hardware_id);
+
+								}
+								else {
+
+									if(current_hardware.HasMember("value")) {
+
+										string value = current_hardware["value"].GetString();
+								    	gpio_write(current_hardware_id, stod(value, NULL));
+								    }									
+
+								}
+								
+							}
+					    }
+					    
+
+					}
+					
+
+			    }
+
+			}
+			
+	    }
+	}
 
     // TODO
 
