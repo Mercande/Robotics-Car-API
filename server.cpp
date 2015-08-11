@@ -351,10 +351,15 @@ int get_body_length(char* request) {
 	if(request == NULL) {
 		return -1;
 	}
-	char * pch = strstr(request,"Content-length: ");
-	if(sizeof(pch)==0)
-		pch = strstr(request,"Content-Length: ");
+	char * pch = strstr(request,"Content-Length: ");	
 	strtok(pch," ");
+	int result = atoi(strtok (NULL, " "));
+
+	if(result!=0)
+		return result;
+
+	char * pch2 = strstr(request,"Content-length: ");
+	strtok(pch2," ");
 	return atoi(strtok (NULL, " "));
 }
 
@@ -523,19 +528,17 @@ int main()
 		else
 			printf("Connected\n");
 
-
 		uint16_t networkLen;
 		read(conn_desc, &networkLen, sizeof(networkLen));
 
 		uint16_t len = ntohs(networkLen); // convert back to host byte order
 		if ( read(conn_desc, buff, sizeof(buff) - 1)> 0) {
 
-	    	buff[len] = '\0';
+	    	//buff[len] = '\0';
 	    	int length_body = get_body_length(buff);
 	    	char* body = (char*)malloc(length_body*sizeof(char));
 
-			printf("Received Request (len:%u, length_body:%d)\n", len, length_body);
-	    	printf("%s\n", buff);
+			printf("\nReq : %s\n\n\nReceived Request (len:%u, length_body:%d)\n\n\n\n", buff, len, length_body);
 
 	    	strcpy(body, get_body(len, buff, length_body));
 
