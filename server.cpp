@@ -46,7 +46,7 @@
 #define PORT 8888
 
 // Hardware
-extern const int ID_LED_1		= 1;
+extern const int ID_LED_1			= 1;
 extern const int ID_DISTANCE_1	= 2;
 extern const int ID_DISTANCE_2	= 3;
 extern const int ID_SERVO_1		= 4;
@@ -69,7 +69,7 @@ int convertBcmToWiring(int pin_bcm) {
 		case 23: return 4;
 		case 24: return 5;
 		case 25: return 6;
-		case 4: return 7;
+		case 4:  return 7;
 		case 17: return 0;
 		case 22: return 3;
 	}
@@ -91,23 +91,43 @@ void delay (unsigned int howLong)
 /**** Hardware functions                                 ****/
 /************************************************************/
 
+int gpio_init_pin(int pin_bcm, int input_output) {
+
+	#ifdef __APPLE__
+	#else
+		int pin = convertBcmToWiring(pin_bcm);
+		wiringPiSetup();
+	  	//pinMode(pin, OUTPUT);
+		pinMode(pin, input_output);
+	#endif
+
+	return 0;
+}
+
 int gpio_write_pin(int pin_bcm, int on_off) {
 
 	#ifdef __APPLE__
 	#else
 		int pin = convertBcmToWiring(pin_bcm);
 		wiringPiSetup() ;
-	  	pinMode(pin, OUTPUT) ;
+	  	//pinMode(pin, OUTPUT) ;
 		digitalWrite(pin, on_off);
 	#endif
 
 	return 0;
 }
 
-double gpio_read_pin(int pin) {
-	// TODO
+double gpio_read_pin(int pin_bcm) {
 
-	return 0;
+	#ifdef __APPLE__
+	#else
+		int pin = convertBcmToWiring(pin_bcm);
+		wiringPiSetup() ;
+	  	//pinMode(pin, OUTPUT) ;
+		int data = digitalRead(pin);
+	#endif
+
+	return data;
 }
 
 double i2c_read() {
@@ -179,6 +199,12 @@ int gpio_write_servo(int device, double value) {
 /************************************************************/
 /**** Functions called by the server                     ****/
 /************************************************************/
+
+void gpio_init(void) {
+	
+	// Init pin LED
+	gpio_init_pin(18, OUTPUT);
+}
 
 int gpio_write(int id, double value) {
 	printf("gpio_write(id=%d, value=%lf)\n", id, value);
@@ -363,7 +389,7 @@ int get_body_length(char* request) {
 	return 0;
 }
 
-int get_body(int len, char* request, int length_body, char* body) {
+int get_body(const int len, const char* request, const int length_body, char* body) {
 
 	int request_length = len;
 	for(int i = 300 ; i < len ; i++ ) {
@@ -538,7 +564,13 @@ int main()
 
 			printf("\nReq : %s\n\n\n", buff);
 
-	    	int length_body = get_body_length(buff);
+			string b(buff);
+
+
+			char* buff2 = (char*)malloc((MAX_SIZE)*sizeof(char));
+			for(int i=0; i<MAX_SIZE; i++)
+				buff2[i] = buff[i];
+	    	int length_body = get_body_length(buff2);
 
 			printf("\nReq length_body : %d\n\n\n", length_body);
 
