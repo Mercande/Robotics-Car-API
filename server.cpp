@@ -427,8 +427,10 @@ int test_hardware() {
 	int time =  70;
 	for(int i = 0; i< 12; i++) {
 		gpio_write(1, 1);
+		assert(1 == gpio_read(1));
 		delay(time);
 		gpio_write(1, 0);
+		assert(0 == gpio_read(1));
 		delay(time);
 	}
 
