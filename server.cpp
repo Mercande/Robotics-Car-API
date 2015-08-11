@@ -135,7 +135,44 @@ double gpio_read_pin(int pin_bcm) {
 
 double i2c_read_distance(int ad) {
 	// TODO ERIC
-	return 0;
+
+	// Reading distance and brightness: SRF08
+	// (Use i2cdetect -y 1 command to find device address : here 0x71 and 0x72)
+
+	int distance = 0;
+
+	#ifdef __APPLE__
+	#else
+		wiringPiSetup();
+		int fd_dist = wiringPiI2CSetup(ad);		// ad = 0x71 and 0x72
+		if(fd_dist == -1) {
+			printf("Can't setup the I2C device (distance SRF08)\n");
+		 	return -1;
+	  	}
+		//printf ("Setup I2C device (distance SRF08) OK - numero : %d \n", fd_dist);
+
+		// Started the distance measure
+		int j = wiringPiI2CWriteReg8(fd_dist, 0, 0x51);
+		//printf ("Write j (0 attendu ; -1 si pb) : %d \n", j);
+
+		// waiting for measure
+		delay (200); // default 680
+
+		// reading the brightness
+		int k = wiringPiI2CReadReg8(fd_dist, 1);
+		//printf ("Brightness level: %d \n", k);
+
+		if(k<0)
+			return -1;
+
+		// reading the distance
+		int range1 = wiringPiI2CReadReg8(fd_dist, 2);
+		int range2 = wiringPiI2CReadReg8(fd_dist, 3);
+		distance = (range1 << 8) + range2;
+		//printf ("Distance: %d \n", distance);
+	#endif
+	
+	return distance < 0 ? -2 : distance;
 }
 
 int i2c_write_servo(int ad, int id_pwm, double value) {
@@ -180,26 +217,18 @@ int gpio_write(int id, double value) {
 
 	switch(id) {
 
-		// LED 1
-		case ID_LED_1 : {
-			return gpio_write_pin(18, value);			
-		}
+		case ID_LED_1 :
+			return gpio_write_pin(18, value);
 
-		// DISTANCE 1
-		case ID_DISTANCE_1: {
+		case ID_DISTANCE_1:
 			return -1;
-		}
 
-		// DISTANCE 2
-		case ID_DISTANCE_2: {
+		case ID_DISTANCE_2:
 			return -1;
-		}
 
-		// SERVO 1
 		case ID_SERVO_1:
 			return gpio_write_servo(1, value);
 
-		// SERVO 2
 		case ID_SERVO_2:
 			return gpio_write_servo(2, value);
 	}
@@ -211,27 +240,22 @@ double gpio_read(int id) {
 
 	switch(id) {
 
-		// LED 1
 		case ID_LED_1:		
 			result = gpio_read_pin(18);
 		break;
 
-		// DISTANCE 1
 		case ID_DISTANCE_1:
 			result = gpio_read_distance(1);
 		break;
 
-		// DISTANCE 2
 		case ID_DISTANCE_2:
 			result = gpio_read_distance(2);
 		break;
 
-		// SERVO 1
 		case ID_SERVO_1:
 			result = -1;
 		break;
 
-		// SERVO 2
 		case ID_SERVO_2:
 			result = -1;
 		break;
@@ -248,26 +272,28 @@ double gpio_read(int id) {
 /**** Request Parsing                                    ****/
 /************************************************************/
 
-int json_parse_body(int len_body, const char* body) {
+char* json_parse_body(int len_body, const char* body) {
 
 	/*
 	EX
 	{"succeed":true,"toast":"Test toast","debug":"on\/off led","content":{"user":{"id":1,"username":"Jonathan"},"date_request":"2015-08-11 09:53:55","hardware":[{"id":1,"read":false,"value":"1","type":"led","succeed":true}],"init_hardware":false}}
 	*/
 
+	// TODO Add missing keys and return json response
+
 	if(body == NULL) {
-		return -1;
+		return NULL;
 	}
 
 	if(body[0] != '{') {
-		return -1;
+		return NULL;
 	}
 
 	rapidjson::Document json;
 	
 	if (json.Parse<0>(body).HasParseError()) {
 		printf("Error parsing (1) : %s\n", body);
-		return -1;
+		return NULL;
 	}
 
 	if(json.HasMember("succeed")) {
@@ -325,8 +351,7 @@ int json_parse_body(int len_body, const char* body) {
 								}
 								
 							}
-					    }
-					    
+					    }					    
 
 					}
 					
@@ -338,9 +363,7 @@ int json_parse_body(int len_body, const char* body) {
 	    }
 	}
 
-    // TODO
-
-	return 0;
+	return NULL;
 }
 
 int get_body_length(char* request) {
@@ -409,6 +432,7 @@ int test_hardware() {
 	}
 
 	gpio_read(ID_DISTANCE_1);
+	gpio_read(ID_DISTANCE_2);
 	gpio_write(ID_SERVO_1, 3.14);
 
 	printf("\n");
