@@ -351,8 +351,11 @@ int get_body_length(char* request) {
 	if(request == NULL) {
 		return -1;
 	}
-	char * pch = strstr(request,"Content-Length: ");
+	printf("COUCOU (11) request=%s\n", request);
+	char * pch = strstr(request,"Content-length: ");
+	printf("COUCOU (12) pch=%s\n", pch);
 	strtok(pch," ");
+	printf("COUCOU (13) pch=%s\n", pch);
 	return atoi(strtok (NULL, " "));
 }
 
@@ -523,22 +526,27 @@ int main()
 
 
 		uint16_t networkLen;
-	    read(conn_desc, &networkLen, sizeof(networkLen));
+		read(conn_desc, &networkLen, sizeof(networkLen));
 
-	    uint16_t len = ntohs(networkLen); // convert back to host byte order
-	    if ( read(conn_desc, buff, sizeof(buff) - 1)> 0) {
+		printf("COUCOU (0)\n");
+
+		uint16_t len = ntohs(networkLen); // convert back to host byte order
+		if ( read(conn_desc, buff, sizeof(buff) - 1)> 0) {
 
 	    	buff[len] = '\0';
 
-	    	//printf("Received Request (len:%u, body_len:%d)\n", len, body_len);
-	    	//printf("%s\n", buff);
+			printf("COUCOU (1)\n");
 
 	    	int length_body = get_body_length(buff);
+
+			printf("COUCOU (2) %d\n", length_body);
+
 	    	char* body = (char*)malloc(length_body*sizeof(char));
 
+			printf("Received Request (len:%u, length_body:%d)\n", len, length_body);
+	    	printf("%s\n", buff);
 
 	    	strcpy(body, get_body(len, buff, length_body));
-
 
 	    	printf("Body : %s\n", body);
 	    	json_parse_body(length_body, body);
