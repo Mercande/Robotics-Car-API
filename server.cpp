@@ -200,7 +200,7 @@ int gpio_write_servo(int device, double value) {
 /**** Functions called by the server                     ****/
 /************************************************************/
 
-void gpio_init(void) {
+void gpio_init() {
 
 	#ifdef __APPLE__
 	#else	
@@ -493,6 +493,8 @@ void test() {
 
 int main()
 {
+	gpio_init();
+
 	test();
 
 	// Two socket descriptors which are just integer numbers used to access a socket
