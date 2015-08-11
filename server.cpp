@@ -46,7 +46,7 @@
 #define PORT 8888
 
 // Hardware
-extern const int ID_LED_1			= 1;
+extern const int ID_LED_1		= 1;
 extern const int ID_DISTANCE_1	= 2;
 extern const int ID_DISTANCE_2	= 3;
 extern const int ID_SERVO_1		= 4;
@@ -124,10 +124,10 @@ double gpio_read_pin(int pin_bcm) {
 		int pin = convertBcmToWiring(pin_bcm);
 		wiringPiSetup() ;
 	  	//pinMode(pin, OUTPUT) ;
-		int data = digitalRead(pin);
+		return digitalRead(pin);
 	#endif
 
-	return data;
+	return -1;
 }
 
 double i2c_read() {
@@ -201,9 +201,12 @@ int gpio_write_servo(int device, double value) {
 /************************************************************/
 
 void gpio_init(void) {
-	
-	// Init pin LED
-	gpio_init_pin(18, OUTPUT);
+
+	#ifdef __APPLE__
+	#else	
+		// Init pin LED
+		gpio_init_pin(18, OUTPUT);
+	#endif
 }
 
 int gpio_write(int id, double value) {
