@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string>
 #include <time.h>
+#include <math.h>
 
 // Jsons
 #include "rapidjson/include/rapidjson/document.h"
@@ -322,7 +323,7 @@ int json_parse_body(int len_body, const char* body) {
 									if(current_hardware.HasMember("value")) {
 
 										string value = current_hardware["value"].GetString();
-								    	gpio_write(current_hardware_id, stod(value, NULL));
+								    	gpio_write(current_hardware_id, atof(value.c_str()));
 								    }									
 
 								}
