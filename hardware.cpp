@@ -31,14 +31,14 @@
 #include <assert.h>
 #include "utils.h"
 
-// Lib Control servo pwm AdaFruit9685
-#include "pca9685/src/pca9685.h"
-
 #include "hardware.h"
 
 // Hardware Raspberry
 #ifdef __APPLE__
 #else
+	// Lib Control servo pwm AdaFruit9685
+	#include "pca9685/pca9685.h"
+
 	#include "wiringPi/wiringPi.h"
 	#include "wiringPi/wiringPiI2C.h"
 #endif
