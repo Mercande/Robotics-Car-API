@@ -43,17 +43,14 @@
 	#include "wiringPi/wiringPiI2C.h"
 #endif
 
-
-// Global variables returned by wiringPi
-static int FD_PWM;
-
+static int fd_pwm = -9999;
 
 
 /************************************************************/
 /**** Hardware functions                                 ****/
 /************************************************************/
 
-int gpio_init_pin(int pin_bcm, int input_output) {
+int hardware_init_pin(int pin_bcm, int input_output) {
 
 	#ifdef __APPLE__
 	#else
@@ -66,7 +63,7 @@ int gpio_init_pin(int pin_bcm, int input_output) {
 	return 0;
 }
 
-int gpio_write_pin(int pin_bcm, int on_off) {
+int hardware_write_pin(int pin_bcm, int on_off) {
 
 	#ifdef __APPLE__
 	#else
@@ -79,7 +76,7 @@ int gpio_write_pin(int pin_bcm, int on_off) {
 	return 0;
 }
 
-double gpio_read_pin(int pin_bcm) {
+double hardware_read_pin(int pin_bcm) {
 
 	#ifdef __APPLE__
 	#else
@@ -92,7 +89,7 @@ double gpio_read_pin(int pin_bcm) {
 	return -1;
 }
 
-double i2c_read_distance(int ad) {
+double hardware_read_distance_i2c(int ad) {
 	// TODO ERIC
 
 	// Reading distance and brightness: SRF08
@@ -108,7 +105,7 @@ double i2c_read_distance(int ad) {
 			printf("Can't setup the I2C device (distance SRF08)\n");
 		 	return -1;
 	  	}
-		//printf ("Setup I2C device (distance SRF08) OK - numero : %d \n", fd_dist);
+		// printf ("Setup I2C device (distance SRF08) OK - numero : %d \n", fd_dist);
 
 		// Started the distance measure
 		int j = wiringPiI2CWriteReg8(fd_dist, 0, 0x51);
@@ -134,23 +131,41 @@ double i2c_read_distance(int ad) {
 	return distance < 0 ? -2 : distance;
 }
 
-int i2c_write_servo(int ad, int id_pwm, double value) {
-	// TODO ERIC
+int hardware_write_servo_i2c(int ad, int id_pwm, double value) {
+	
+	// Init
+	if(fd_pwm == -9999) {
+		fd_pwm = pca9685Setup(300, ad, 60);	// int pinBase (>64 eg.300), const int i2cAddress (default : 0x40), float freq (default : 50)
+		if(fd_pwm == -1)
+			return -1;
+	}
+
+	// Secure hardware
+	if(value < 0) 			value = 0;
+	else if(value > 1) 	value = 1;		
+
+	// --- servos activation : value range
+	//			servoMin = 380  		# Min pulse length out of 4096	(servo right max)
+	//			servoCenter = 410		#	
+	//			servoMax = 480  		# Max pulse length out of 4096	(servo left max)
+	value = 350 + 120*value;
+	pca9685PWMWrite(fd_pwm, id_pwm, 0, value); // int fd, int pin, int on, int off
+
 	return 0;
 }
 
-double gpio_read_distance(int device) {
+double hardware_read_distance(int device) {
 	switch(device) {
-		case 1:	return i2c_read_distance(0x71);
-		case 2: return i2c_read_distance(0x72);
+		case 1: return hardware_read_distance_i2c(0x71);
+		case 2: return hardware_read_distance_i2c(0x72);
 	}
 	return 0;
 }
 
-int gpio_write_servo(int device, double value) {
+int hardware_write_servo(int device, double value) {
 	switch(device) {
-		case 1:	return i2c_write_servo(0x40, 1, value);
-		case 2: return i2c_write_servo(0x40, 16, value);
+		case 1: return hardware_write_servo_i2c(0x40, 0, value);
+		case 2: return hardware_write_servo_i2c(0x40, 15, value);
 	}
 	return 0;
 }
@@ -162,35 +177,35 @@ int gpio_write_servo(int device, double value) {
 /**** Public Functions called by the server              ****/
 /************************************************************/
 
-void hardware_init() {
+int hardware_init() {
+	int result = 0;
 
 	#ifdef __APPLE__
 	#else	
 		//
 		// Init pin LED (GPIO Blackberry)
 		//
-		gpio_init_pin(18, OUTPUT);
+		result |= hardware_init_pin(18, OUTPUT);
 
-		//
-		// Init devices i2c
-		//
-		// --- Init measures distance (SRF08)
 		// --- Init driver servo PWM (Adafruit 9685)
 		// 	 (Use i2cdetect -y 1 command to find device address : here 0x40 default address)
 		//
-		FD_PWM = pca9685Setup(300, 0x40, 60);	// int pinBase (>64 eg.300), const int i2cAddress (default : 0x40), float freq (default : 50)
-   	printf ("Setup I2C PWM device (Adafruit : PCA 9685) OK - numero : %d \n", FD_PWM);
+		fd_pwm = pca9685Setup(300, 0x40, 60);	// int pinBase (>64 eg.300), const int i2cAddress (default : 0x40), float freq (default : 50)
+		if(fd_pwm == -1)
+			return -1;
+   	// printf ("Setup I2C PWM device (Adafruit : PCA 9685) OK - numero : %d \n", fd_pwm);
 
 	#endif
+	return result;
 }
 
-int gpio_write(int id, double value) {
-	printf("gpio_write(id=%d, value=%lf)\n", id, value);
+int hardware_write(int id, double value) {
+	printf("hardware_write(id=%d, value=%lf)\n", id, value);
 
 	switch(id) {
 
 		case ID_LED_1 :
-			return gpio_write_pin(18, value);
+			return hardware_write_pin(18, value);
 
 		case ID_DISTANCE_1:
 			return -1;
@@ -199,29 +214,29 @@ int gpio_write(int id, double value) {
 			return -1;
 
 		case ID_SERVO_1:
-			return gpio_write_servo(1, value);
+			return hardware_write_servo(1, value);
 
 		case ID_SERVO_2:
-			return gpio_write_servo(2, value);
+			return hardware_write_servo(2, value);
 	}
 	return -1;
 }
 
-double gpio_read(int id) {
+double hardware_read(int id) {
 	double result = 0;
 
 	switch(id) {
 
 		case ID_LED_1:		
-			result = gpio_read_pin(18);
+			result = hardware_read_pin(18);
 		break;
 
 		case ID_DISTANCE_1:
-			result = gpio_read_distance(1);
+			result = hardware_read_distance(1);
 		break;
 
 		case ID_DISTANCE_2:
-			result = gpio_read_distance(2);
+			result = hardware_read_distance(2);
 		break;
 
 		case ID_SERVO_1:
@@ -233,7 +248,7 @@ double gpio_read(int id) {
 		break;
 	}
 
-	printf("gpio_read(id=%d)  =  %lf\n", id, result);
+	printf("hardware_read(id=%d)  =  %lf\n", id, result);
 
 	return result;
 }
@@ -244,7 +259,7 @@ double gpio_read(int id) {
 /**** Test functions called each time the program start  ****/
 /************************************************************/
 
-int test_hardware() {
+int hardware_test() {
 
 	printf("\n");
 	printLine();
@@ -253,20 +268,35 @@ int test_hardware() {
 	// clignotement LED
 	int time =  100;
 	for(int i = 0; i< 3; i++) {
-		gpio_write(1, 1);
-		assert(1 == gpio_read(1));
+		hardware_write(1, 1);
+		assert(1 == hardware_read(1));
 		tempo(time);
 		printf("\n");
 
-		gpio_write(1, 0);
-		assert(0 == gpio_read(1));
+		hardware_write(1, 0);
+		assert(0 == hardware_read(1));
 		tempo(time);
 		printf("\n");
 	}
 
-	gpio_read(ID_DISTANCE_1);
-	gpio_read(ID_DISTANCE_2);
-	gpio_write(ID_SERVO_1, 3.14);
+	// lecture capteurs distance
+	hardware_read(ID_DISTANCE_1);
+	hardware_read(ID_DISTANCE_2);
+
+	// commande des servos
+	// --- --- a droite
+	hardware_write(ID_SERVO_1, 0);
+	hardware_write(ID_SERVO_2, 0);
+	tempo (2000);
+
+	// --- --- a gauche
+	hardware_write(ID_SERVO_1, 1);
+	hardware_write(ID_SERVO_2, 1);
+	tempo (2000);
+
+	// --- --- au centre
+	hardware_write(ID_SERVO_1, 0.5);
+	hardware_write(ID_SERVO_2, 0.5);
 
 	printf("\n");
 

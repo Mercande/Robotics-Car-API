@@ -116,7 +116,7 @@ char* json_parse_body(int len_body, const char* body) {
 								
 								if(current_hardware["read"].GetBool()) {
 
-									gpio_read(current_hardware_id);
+									hardware_read(current_hardware_id);
 
 								}
 								else {
@@ -124,7 +124,7 @@ char* json_parse_body(int len_body, const char* body) {
 									if(current_hardware.HasMember("value")) {
 
 										string value = current_hardware["value"].GetString();
-								    	gpio_write(current_hardware_id, atof(value.c_str()));
+								    	hardware_write(current_hardware_id, atof(value.c_str()));
 								    }									
 
 								}
@@ -231,7 +231,7 @@ void test() {
 	test_json();
 	#ifdef __APPLE__
 	#else
-		test_hardware();
+		hardware_test();
 	#endif
 }
 
@@ -245,7 +245,10 @@ void test() {
 
 int main()
 {
-	hardware_init();
+	if(hardware_init() < 0) {
+		printf("Error hardware_init() < 0");
+		return 0;
+	}
 
 	test();
 
