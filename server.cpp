@@ -61,32 +61,29 @@ char* json_parse_body(int len_body, const char* body) {
 	// TODO Add missing keys and return json response
 
 	if(body == NULL) {
-		return NULL;
-	}
-
-	if(body[0] != '{') {
+		printf("Error JSON parsing (1)\n");
 		return NULL;
 	}
 
 	rapidjson::Document json;
 	
 	if (json.Parse<0>(body).HasParseError()) {
-		printf("Error parsing (1) : %s\n", body);
+		printf("Error JSON parsing (2)\n");
 		return NULL;
 	}
 
 	if(json.HasMember("succeed")) {
 		if(json["succeed"].IsBool()) {
-			printf("succeed = %s\n", json["succeed"].GetBool() ? "true" : "false");
+			bool succeed = json["succeed"].GetBool();
 		}
     }
 
     if(json.HasMember("toast")) {
-    	printf("toast = %s\n", json["toast"].GetString());
+    	string toast = json["toast"].GetString();
     }
 
     if(json.HasMember("debug")) {
-    	printf("debug = %s\n", json["debug"].GetString());
+    	string debug = json["debug"].GetString();
     }   
 
     if(json.HasMember("content")) {
@@ -94,7 +91,7 @@ char* json_parse_body(int len_body, const char* body) {
     	const rapidjson::Value& content = json["content"];
 
     	if(content.HasMember("date_request")) {
-	    	printf("date_request = %s\n", content["date_request"].GetString());
+	    	string date_request = content["date_request"].GetString();
 	    }
 
 	    if(content.HasMember("hardware")) {
@@ -169,18 +166,12 @@ int get_body_length(char* request) {
 }
 
 int get_body(const int len, const char* request, const int length_body, char* body) {
+	string request_str(request);
 
-	int request_length = len;
-	for(int i = 300 ; i < len ; i++ ) {
-		request_length = i;
-		if(request[i] == '\0')
-			break;
+	if(request_str.find("\r\n\r\n") != std::string::npos) {
+		memcpy(body,strstr(request,"\r\n\r\n"), length_body+4);
+		body[length_body+4] = '\0';
 	}
-	for(int i = 1 ; i <= length_body ; i++ ) {
-		body[length_body - i] = request[request_length - i];
-	}
-	body[length_body] = '\0';
-
 	return 0;
 }
 
@@ -321,7 +312,6 @@ int main()
 
 	    	//buff[len] = '\0';
 
-
 			printf("\nReq : %s\n\n\n", buff);
 
 			string b(buff);
@@ -331,17 +321,18 @@ int main()
 			for(int i=0; i<MAX_SIZE; i++)
 				buff2[i] = buff[i];
 	    	int length_body = get_body_length(buff2);
+	    	free(buff2);
 
 			printf("\nReq length_body : %d\n\n\n", length_body);
 
 
-	    	char* body = (char*)malloc((length_body+1)*sizeof(char));
+	    	char* body = (char*)malloc((length_body+4+1)*sizeof(char));
 
-			printf("\nReq : %s\n\n\nReceived Request (len:%u, length_body:%d)\n\n\n\n", buff, len, length_body);
+			printf("\nReq : %s\n\n\nReceived Request (len:%u, length_body:%d)\n\n", buff, len, length_body);
 
 	    	get_body(len, buff, length_body, body);
 
-	    	printf("Body : %s\n", body);
+	    	printf("Body : %s\n\n", body);
 	    	json_parse_body(length_body, body);
 
 
@@ -351,6 +342,8 @@ int main()
 			}
 			else
 				printf("Failed writing\n");
+
+			free(body);
 		}
 		else
 			printf("Failed receiving\n");
@@ -360,6 +353,8 @@ int main()
 		// Program should always close all sockets (the connected one as well as the listening one)
 		// as soon as it is done processing with it
 		close(conn_desc);
+
+		memset(&buff[0], 0, MAX_SIZE);
 	}
 
 	close(sock_descriptor);
