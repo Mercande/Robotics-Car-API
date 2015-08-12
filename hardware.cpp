@@ -111,7 +111,7 @@ double i2c_read_distance(int ad) {
 		//printf ("Write j (0 attendu ; -1 si pb) : %d \n", j);
 
 		// waiting for measure
-		delay (200); // default 680
+		tempo(200); // default 680
 
 		// reading the brightness
 		int k = wiringPiI2CReadReg8(fd_dist, 1);
@@ -238,12 +238,12 @@ int test_hardware() {
 	for(int i = 0; i< 3; i++) {
 		gpio_write(1, 1);
 		assert(1 == gpio_read(1));
-		delay(time);
+		tempo(time);
 		printf("\n");
 
 		gpio_write(1, 0);
 		assert(0 == gpio_read(1));
-		delay(time);
+		tempo(time);
 		printf("\n");
 	}
 

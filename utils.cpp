@@ -54,7 +54,7 @@ int convertBcmToWiring(int pin_bcm) {
 	return 1;
 }
 
-void delay(unsigned int howLong) {
+void tempo(unsigned int howLong) {
   struct timespec sleeper, dummy ;
 
   sleeper.tv_sec  = (time_t)(howLong / 1000) ;

@@ -3,6 +3,6 @@
 
 void printLine();
 int convertBcmToWiring(int pin_bcm);
-void delay(unsigned int howLong);
+void tempo(unsigned int howLong);
 
 #endif

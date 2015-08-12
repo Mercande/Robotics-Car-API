@@ -7,8 +7,6 @@ static const int ID_DISTANCE_2	= 3;
 static const int ID_SERVO_1		= 4;
 static const int ID_SERVO_2		= 5;
 
-void delay(unsigned int howLong);
-
 void gpio_init();
 int gpio_write(int id, double value);
 double gpio_read(int id);
