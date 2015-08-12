@@ -44,7 +44,8 @@
 #endif
 
 
-int var_gl_fd;
+// Global variables returned by wiringPi
+static int FD_PWM;
 
 
 
@@ -161,12 +162,25 @@ int gpio_write_servo(int device, double value) {
 /**** Public Functions called by the server              ****/
 /************************************************************/
 
-void gpio_init() {
+void hardware_init() {
 
 	#ifdef __APPLE__
 	#else	
-		// Init pin LED
+		//
+		// Init pin LED (GPIO Blackberry)
+		//
 		gpio_init_pin(18, OUTPUT);
+
+		//
+		// Init devices i2c
+		//
+		// --- Init measures distance (SRF08)
+		// --- Init driver servo PWM (Adafruit 9685)
+		// 	 (Use i2cdetect -y 1 command to find device address : here 0x40 default address)
+		//
+		FD_PWM = pca9685Setup(300, 0x40, 60);	// int pinBase (>64 eg.300), const int i2cAddress (default : 0x40), float freq (default : 50)
+   	printf ("Setup I2C PWM device (Adafruit : PCA 9685) OK - numero : %d \n", FD_PWM);
+
 	#endif
 }
 

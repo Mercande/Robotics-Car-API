@@ -10,5 +10,5 @@ endif
 
 all:
 	@echo "Compile for OS $(OS)..."
-	$(CC) -o server server.cpp hardware.cpp utils.cpp $(HARDWARE_OPTION)
+	$(CC) -o server server.cpp hardware.cpp utils.cpp pca/pca9685.c $(HARDWARE_OPTION)
 	rm -f *o server.o

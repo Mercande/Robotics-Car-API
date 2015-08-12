@@ -245,7 +245,7 @@ void test() {
 
 int main()
 {
-	gpio_init();
+	hardware_init();
 
 	test();
 
