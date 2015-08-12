@@ -133,23 +133,26 @@ double hardware_read_distance_i2c(int ad) {
 
 int hardware_write_servo_i2c(int ad, int id_pwm, double value) {
 	
-	// Init
-	if(fd_pwm == -9999) {
-		fd_pwm = pca9685Setup(300, ad, 60);	// int pinBase (>64 eg.300), const int i2cAddress (default : 0x40), float freq (default : 50)
-		if(fd_pwm == -1)
-			return -1;
-	}
+	#ifdef __APPLE__
+	#else
+		// Init
+		if(fd_pwm == -9999) {
+			fd_pwm = pca9685Setup(300, ad, 60);	// int pinBase (>64 eg.300), const int i2cAddress (default : 0x40), float freq (default : 50)
+			if(fd_pwm == -1)
+				return -1;
+		}
 
-	// Secure hardware
-	if(value < 0) 			value = 0;
-	else if(value > 1) 	value = 1;		
+		// Secure hardware
+		if(value < 0) 			value = 0;
+		else if(value > 1) 	value = 1;		
 
-	// --- servos activation : value range
-	//			servoMin = 380  		# Min pulse length out of 4096	(servo right max)
-	//			servoCenter = 410		#	
-	//			servoMax = 480  		# Max pulse length out of 4096	(servo left max)
-	value = 350 + 120*value;
-	pca9685PWMWrite(fd_pwm, id_pwm, 0, value); // int fd, int pin, int on, int off
+		// --- servos activation : value range
+		//			servoMin = 380  		# Min pulse length out of 4096	(servo right max)
+		//			servoCenter = 410		#	
+		//			servoMax = 480  		# Max pulse length out of 4096	(servo left max)
+		value = 350 + 120*value;
+		pca9685PWMWrite(fd_pwm, id_pwm, 0, value); // int fd, int pin, int on, int off
+	#endif
 
 	return 0;
 }
