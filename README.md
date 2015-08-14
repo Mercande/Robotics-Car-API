@@ -19,9 +19,14 @@ Robotics - Car - API
 Open a terminal:
 git clone https://github.com/Mercande/Robotics-Car-API
 
-* Step 2
+* Step 2 : optionnal
 
-To do
+Action on the Raspberry terminal :
+sudo crontab -e
+
+At the bottom of the file, add :
+@reboot sudo /home/pi/Robotics-Car-API/server
+
 
 
 ## REST API ROUTES
@@ -30,7 +35,7 @@ To do
 
 |Root             | Method   | Description                 | Input                      | Output
 |-----------------|----------|-----------------------------|----------------------------|-----------------------------
-| /               | GET 	 |                             |                            | 
+| :8888           | POST   	 |                             |                            | 
 
 
 ## DEVELOPERS
