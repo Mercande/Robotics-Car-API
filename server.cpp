@@ -26,11 +26,15 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <string>
+#include <cstring>
+#include <sstream>
 #include <time.h>
 #include <math.h>
 
 // Jsons
 #include "rapidjson/include/rapidjson/document.h"
+#include "rapidjson/include/rapidjson/prettywriter.h"
+#include "rapidjson/include/rapidjson/filestream.h"
 #include <cstdio>
 
 // Local files
@@ -45,6 +49,34 @@
 
 using std::string;
 
+
+/************************************************************/
+/**** Create response                                    ****/
+/************************************************************/
+
+string create_response_hardware(int id, string type) {
+	std::stringstream ss("");
+	ss << "{\"id\":";
+	ss << id;
+	ss << ",\"read\":true,\"type\":\"";
+	ss << type;
+	ss << "\",\"suceed\":true,\"value\":\"";
+    ss << hardware_read(id);
+    ss << "\"}";
+    return ss.str();
+}
+
+string create_response() {
+	std::stringstream ss("");
+	ss << "{\"succeed\"=true,\"content\":{\"hardware\":[";
+    ss << create_response_hardware(ID_LED_1, "led");
+    ss << ",";
+    ss << create_response_hardware(ID_DISTANCE_1, "distance");
+    ss << ",";
+    ss << create_response_hardware(ID_DISTANCE_2, "distance");
+    ss << "]}}";
+    return ss.str();
+}
 
 
 /************************************************************/
@@ -336,8 +368,10 @@ int main()
 	    	json_parse_body(length_body, body);
 
 
+	    	string response = create_response();
+
 			// The new descriptor can be simply read from / written up just like a normal file descriptor
-			if ( write(conn_desc, buff, len-1) > 0) {
+			if ( write(conn_desc, response.c_str(), response.size()) > 0) {
 				//printf("Written %s", buff);
 			}
 			else
