@@ -68,7 +68,7 @@ string create_response_hardware(int id, string type) {
 
 string create_response() {
 	std::stringstream ss("");
-	ss << "{\"succeed\"=true,\"content\":{\"hardware\":[";
+	ss << "{\"succeed\":true,\"content\":{\"hardware\":[";
     ss << create_response_hardware(ID_LED_1, "led");
     ss << ",";
     ss << create_response_hardware(ID_DISTANCE_1, "distance");
@@ -78,7 +78,8 @@ string create_response() {
 
 	string body = ss.str();
 
-	std::stringstream response("HTTP/1.0 200 Document follows\r\nServer: RaspberryPi \r\nContent-Type: application/json\r\nContent-Length: ");
+	std::stringstream response("");
+	response << "HTTP/1.0 200 Document follows\r\nServer: RaspberryPi \r\nContent-Type: application/json\r\nContent-Length: ";
 	response << body.size() << "\r\n\r\n" << body;
 
     return response.str();
