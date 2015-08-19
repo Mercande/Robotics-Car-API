@@ -110,16 +110,18 @@ double hardware_read_distance_i2c(int ad) {
 		// Started the distance measure
 		int j = wiringPiI2CWriteReg8(fd_dist, 0, 0x51);
 		//printf ("Write j (0 attendu ; -1 si pb) : %d \n", j);
-
+		
 		// waiting for measure
-		tempo(200); // default 680
+		tempo(75); // default 680
 
+		/*
 		// reading the brightness
 		int k = wiringPiI2CReadReg8(fd_dist, 1);
 		//printf ("Brightness level: %d \n", k);
 
 		if(k<0)
 			return -1;
+		*/
 
 		// reading the distance
 		int range1 = wiringPiI2CReadReg8(fd_dist, 2);
