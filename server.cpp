@@ -351,7 +351,7 @@ int main()
 
 	    	//buff[len] = '\0';
 
-			printf("\nReq : %s\n\n\n", buff);
+			//printf("\nReq : %s\n\n\n", buff);
 
 			string b(buff);
 
@@ -362,16 +362,16 @@ int main()
 	    	int length_body = get_body_length(buff2);
 	    	free(buff2);
 
-			printf("\nReq length_body : %d\n\n\n", length_body);
+			//printf("\nReq length_body : %d\n\n\n", length_body);
 
 
 	    	char* body = (char*)malloc((length_body+4+1)*sizeof(char));
 
-			printf("\nReq : %s\n\n\nReceived Request (len:%u, length_body:%d)\n\n", buff, len, length_body);
+			//printf("\nReq : %s\n\n\nReceived Request (len:%u, length_body:%d)\n\n", buff, len, length_body);
 
 	    	get_body(len, buff, length_body, body);
 
-	    	printf("Body : %s\n\n", body);
+	    	//printf("Body : %s\n\n", body);
 	    	json_parse_body(length_body, body);
 
 
