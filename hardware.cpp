@@ -54,8 +54,7 @@ int hardware_init_pin(int pin_bcm, int input_output) {
 
 	#ifdef __APPLE__
 	#else
-		int pin = convertBcmToWiring(pin_bcm);
-		wiringPiSetup();
+		int pin = convertBcmToWiring(pin_bcm);		
 	  	//pinMode(pin, OUTPUT);
 		pinMode(pin, input_output);
 	#endif
@@ -68,7 +67,6 @@ int hardware_write_pin(int pin_bcm, int on_off) {
 	#ifdef __APPLE__
 	#else
 		int pin = convertBcmToWiring(pin_bcm);
-		wiringPiSetup() ;
 	  	//pinMode(pin, OUTPUT) ;
 		digitalWrite(pin, on_off);
 	#endif
@@ -81,7 +79,6 @@ double hardware_read_pin(int pin_bcm) {
 	#ifdef __APPLE__
 	#else
 		int pin = convertBcmToWiring(pin_bcm);
-		wiringPiSetup() ;
 	  	//pinMode(pin, OUTPUT) ;
 		return digitalRead(pin);
 	#endif
@@ -99,7 +96,6 @@ double hardware_read_distance_i2c(int ad) {
 
 	#ifdef __APPLE__
 	#else
-		wiringPiSetup();
 		int fd_dist = wiringPiI2CSetup(ad);		// ad = 0x71 and 0x72
 		if(fd_dist == -1) {
 			printf("Can't setup the I2C device (distance SRF08)\n");
@@ -187,6 +183,9 @@ int hardware_init() {
 
 	#ifdef __APPLE__
 	#else	
+
+		wiringPiSetup();
+
 		//
 		// Init pin LED (GPIO Blackberry)
 		//
