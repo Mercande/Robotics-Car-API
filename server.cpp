@@ -75,7 +75,13 @@ string create_response() {
     ss << ",";
     ss << create_response_hardware(ID_DISTANCE_2, "distance");
     ss << "]}}";
-    return ss.str();
+
+	string body = ss.str();
+
+	std::stringstream response("HTTP/1.0 200 Document follows\r\nServer: RaspberryPi \r\nContent-Type: application/json\r\nContent-Length: ");
+	response << body.size() << "\r\n\r\n" << body;
+
+    return response.str();
 }
 
 
