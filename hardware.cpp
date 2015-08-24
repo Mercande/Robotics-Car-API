@@ -128,7 +128,7 @@ double hardware_read_distance_i2c(int ad) {
 	
 	return distance < 0 ? -2 : distance;
 }
-
+/*
 double* hardware_read_distance_i2c_all() {
 	double* result = new double[2];
 
@@ -136,6 +136,7 @@ double* hardware_read_distance_i2c_all() {
 
 	return result;
 }
+*/
 
 int hardware_write_servo_i2c(int ad, int id_pwm, double value) {
 	
