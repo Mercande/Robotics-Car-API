@@ -129,6 +129,14 @@ double hardware_read_distance_i2c(int ad) {
 	return distance < 0 ? -2 : distance;
 }
 
+double* hardware_read_distance_i2c_all() {
+	double* result = new double[2];
+
+	//TODO
+
+	return result;
+}
+
 int hardware_write_servo_i2c(int ad, int id_pwm, double value) {
 	
 	#ifdef __APPLE__
