@@ -139,7 +139,9 @@ double* hardware_read_distance_i2c_all() {
 		int fd_dist_2 = wiringPiI2CSetup(0x72);		// ad = 0x71 and 0x72
 		if(fd_dist_1 == -1 || fd_dist_2 == -1) {
 			printf("Can't setup the I2C device (distance SRF08)\n");
-		 	return -1;
+			result[0] = -1;
+			result[1] = -1;
+		 	return result;
 	  	}
 		// printf ("Setup I2C device (distance SRF08) OK - numero : %d \n", fd_dist);
 
