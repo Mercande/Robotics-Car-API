@@ -137,8 +137,7 @@ double* hardware_read_distance_i2c_all() {
 	int distance_2 = 0;
 
 	#ifdef __APPLE__
-	#else
-		/*
+	#else		
 		// Started the distance measure
 		wiringPiI2CWriteReg8(fd_dist_1, 0, 0x51);
 		wiringPiI2CWriteReg8(fd_dist_2, 0, 0x51);
@@ -154,7 +153,6 @@ double* hardware_read_distance_i2c_all() {
 		range1 = wiringPiI2CReadReg8(fd_dist_2, 2);
 		range2 = wiringPiI2CReadReg8(fd_dist_2, 3);
 		distance_2 = (range1 << 8) + range2;
-		*/
 	#endif
 	
 	result[0] = distance_1 < 0 ? -2 : distance_1;
@@ -168,7 +166,6 @@ int hardware_write_servo_i2c(int ad, int id_pwm, double value) {
 	
 	#ifdef __APPLE__
 	#else
-
 		// Secure hardware
 		if(value < 0) 			value = 0;
 		else if(value > 1) 	value = 1;		
