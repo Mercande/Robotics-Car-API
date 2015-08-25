@@ -148,14 +148,14 @@ double* hardware_read_distance_i2c_all() {
 				result[1] = -1;
 			 	return result;
 		  	}
-
-		  	// Started the distance measure
-			wiringPiI2CWriteReg8(fd_dist_1, 0, 0x51);
-			wiringPiI2CWriteReg8(fd_dist_2, 0, 0x51);
-			
-			// waiting for measure
-			tempo(75);
 		}
+		
+		// Started the distance measure
+		wiringPiI2CWriteReg8(fd_dist_1, 0, 0x51);
+		wiringPiI2CWriteReg8(fd_dist_2, 0, 0x51);
+		
+		// waiting for measure
+		tempo(75);
 
 		// reading the distance
 		int range1 = wiringPiI2CReadReg8(fd_dist_1, 2);
