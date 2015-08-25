@@ -10,6 +10,7 @@ static const int ID_SERVO_2		= 5;
 int hardware_init();
 int hardware_write(int id, double value);
 double hardware_read(int id);
+double* hardware_read_distance();
 
 int hardware_test();
 

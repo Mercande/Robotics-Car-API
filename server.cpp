@@ -54,26 +54,39 @@ using std::string;
 /**** Create response                                    ****/
 /************************************************************/
 
-string create_response_hardware(int id, string type) {
+string create_response_hardware(int id, string type, double value) {
 	std::stringstream ss("");
 	ss << "{\"id\":";
 	ss << id;
 	ss << ",\"read\":true,\"type\":\"";
 	ss << type;
 	ss << "\",\"suceed\":true,\"value\":\"";
-    ss << hardware_read(id);
+    ss << value;
     ss << "\"}";
     return ss.str();
 }
 
+string create_response_hardware(int id, string type) {
+	return create_response_hardware(id, type, hardware_read(id));
+}
+
+string create_response_hardware_distance() {
+	double* distances = new double[2];
+	distances = hardware_read_distance();
+	std::stringstream ss("");
+	ss << create_response_hardware(ID_DISTANCE_1, "distance", distances[0]);
+	ss << ",";
+	ss << create_response_hardware(ID_DISTANCE_2, "distance", distances[1]);
+	return ss.str();
+}
+
 string create_response() {
+
 	std::stringstream ss("");
 	ss << "{\"succeed\":true,\"content\":{\"hardware\":[";
     ss << create_response_hardware(ID_LED_1, "led");
     ss << ",";
-    ss << create_response_hardware(ID_DISTANCE_1, "distance");
-    ss << ",";
-    ss << create_response_hardware(ID_DISTANCE_2, "distance");
+    ss << create_response_hardware_distance();
     ss << "]}}";
 
 	string body = ss.str();

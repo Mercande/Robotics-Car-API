@@ -87,8 +87,6 @@ double hardware_read_pin(int pin_bcm) {
 }
 
 double hardware_read_distance_i2c(int ad) {
-	// TODO ERIC
-
 	// Reading distance and brightness: SRF08
 	// (Use i2cdetect -y 1 command to find device address : here 0x71 and 0x72)
 
@@ -132,7 +130,39 @@ double hardware_read_distance_i2c(int ad) {
 double* hardware_read_distance_i2c_all() {
 	double* result = new double[2];
 
-	//TODO
+	int distance_1 = 0;
+	int distance_2 = 0;
+
+	#ifdef __APPLE__
+	#else
+		int fd_dist_1 = wiringPiI2CSetup(0x71);		// ad = 0x71 and 0x72
+		int fd_dist_2 = wiringPiI2CSetup(0x72);		// ad = 0x71 and 0x72
+		if(fd_dist_1 == -1 || fd_dist_2 == -1) {
+			printf("Can't setup the I2C device (distance SRF08)\n");
+		 	return -1;
+	  	}
+		// printf ("Setup I2C device (distance SRF08) OK - numero : %d \n", fd_dist);
+
+		// Started the distance measure
+		wiringPiI2CWriteReg8(fd_dist_1, 0, 0x51);
+		wiringPiI2CWriteReg8(fd_dist_2, 0, 0x51);
+		//printf ("Write j (0 attendu ; -1 si pb) : %d \n", j);
+		
+		// waiting for measure
+		tempo(75);
+
+		// reading the distance
+		int range1 = wiringPiI2CReadReg8(fd_dist_1, 2);
+		int range2 = wiringPiI2CReadReg8(fd_dist_1, 3);
+		distance_1 = (range1 << 8) + range2;
+
+		range1 = wiringPiI2CReadReg8(fd_dist_2, 2);
+		range2 = wiringPiI2CReadReg8(fd_dist_2, 3);
+		distance_2 = (range1 << 8) + range2;
+	#endif
+	
+	result[0] = distance_1 < 0 ? -2 : distance_1;
+	result[1] = distance_2 < 0 ? -2 : distance_2;
 
 	return result;
 }
@@ -264,6 +294,10 @@ double hardware_read(int id) {
 	printf("hardware_read(id=%d)  =  %lf\n", id, result);
 
 	return result;
+}
+
+double* hardware_read_distance() {
+	return hardware_read_distance_i2c_all();
 }
 
 
