@@ -45,6 +45,9 @@
 
 static int fd_pwm = -9999;
 
+static int fd_dist_1 = -9999;
+static int fd_dist_2 = -9999;
+
 
 /************************************************************/
 /**** Hardware functions                                 ****/
@@ -135,23 +138,24 @@ double* hardware_read_distance_i2c_all() {
 
 	#ifdef __APPLE__
 	#else
-		int fd_dist_1 = wiringPiI2CSetup(AD_DISTANCE_1);		// ad = 0x71 and 0x72
-		int fd_dist_2 = wiringPiI2CSetup(AD_DISTANCE_2);		// ad = 0x71 and 0x72
-		if(fd_dist_1 == -1 || fd_dist_2 == -1) {
-			printf("Can't setup the I2C device (distance SRF08)\n");
-			result[0] = -1;
-			result[1] = -1;
-		 	return result;
-	  	}
-		// printf ("Setup I2C device (distance SRF08) OK - numero : %d \n", fd_dist);
+		if(fd_dist_1 == -9999 || fd_dist_2 == -9999) {
+			fd_dist_1 = wiringPiI2CSetup(AD_DISTANCE_1);		// ad = 0x71 and 0x72
+			fd_dist_2 = wiringPiI2CSetup(AD_DISTANCE_2);		// ad = 0x71 and 0x72
 
-		// Started the distance measure
-		wiringPiI2CWriteReg8(fd_dist_1, 0, 0x51);
-		wiringPiI2CWriteReg8(fd_dist_2, 0, 0x51);
-		//printf ("Write j (0 attendu ; -1 si pb) : %d \n", j);
-		
-		// waiting for measure
-		tempo(75);
+			if(fd_dist_1 == -1 || fd_dist_2 == -1) {
+				printf("Can't setup the I2C device (distance SRF08)\n");
+				result[0] = -1;
+				result[1] = -1;
+			 	return result;
+		  	}
+
+		  	// Started the distance measure
+			wiringPiI2CWriteReg8(fd_dist_1, 0, 0x51);
+			wiringPiI2CWriteReg8(fd_dist_2, 0, 0x51);
+			
+			// waiting for measure
+			tempo(75);
+		}
 
 		// reading the distance
 		int range1 = wiringPiI2CReadReg8(fd_dist_1, 2);
