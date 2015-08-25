@@ -138,18 +138,7 @@ double* hardware_read_distance_i2c_all() {
 
 	#ifdef __APPLE__
 	#else
-		if(fd_dist_1 == -9999 || fd_dist_2 == -9999) {
-			fd_dist_1 = wiringPiI2CSetup(AD_DISTANCE_1);		// ad = 0x71 and 0x72
-			fd_dist_2 = wiringPiI2CSetup(AD_DISTANCE_2);		// ad = 0x71 and 0x72
-
-			if(fd_dist_1 == -1 || fd_dist_2 == -1) {
-				printf("Can't setup the I2C device (distance SRF08)\n");
-				result[0] = -1;
-				result[1] = -1;
-			 	return result;
-		  	}
-		}
-		
+		/*
 		// Started the distance measure
 		wiringPiI2CWriteReg8(fd_dist_1, 0, 0x51);
 		wiringPiI2CWriteReg8(fd_dist_2, 0, 0x51);
@@ -165,6 +154,7 @@ double* hardware_read_distance_i2c_all() {
 		range1 = wiringPiI2CReadReg8(fd_dist_2, 2);
 		range2 = wiringPiI2CReadReg8(fd_dist_2, 3);
 		distance_2 = (range1 << 8) + range2;
+		*/
 	#endif
 	
 	result[0] = distance_1 < 0 ? -2 : distance_1;
@@ -178,12 +168,6 @@ int hardware_write_servo_i2c(int ad, int id_pwm, double value) {
 	
 	#ifdef __APPLE__
 	#else
-		// Init
-		if(fd_pwm == -9999) {
-			fd_pwm = pca9685Setup(300, ad, 60);	// int pinBase (>64 eg.300), const int i2cAddress (default : 0x40), float freq (default : 50)
-			if(fd_pwm == -1)
-				return -1;
-		}
 
 		// Secure hardware
 		if(value < 0) 			value = 0;
@@ -242,7 +226,15 @@ int hardware_init() {
 		fd_pwm = pca9685Setup(300, 0x40, 60);	// int pinBase (>64 eg.300), const int i2cAddress (default : 0x40), float freq (default : 50)
 		if(fd_pwm == -1)
 			return -1;
-   	// printf ("Setup I2C PWM device (Adafruit : PCA 9685) OK - numero : %d \n", fd_pwm);
+   		// printf ("Setup I2C PWM device (Adafruit : PCA 9685) OK - numero : %d \n", fd_pwm);
+
+		// --- Init driver servo PWM (Adafruit 9685)
+		fd_dist_1 = wiringPiI2CSetup(AD_DISTANCE_1);		// ad = 0x71 and 0x72
+		fd_dist_2 = wiringPiI2CSetup(AD_DISTANCE_2);		// ad = 0x71 and 0x72
+		if(fd_dist_1 == -1 || fd_dist_2 == -1) {
+			printf("Can't setup the I2C device (distance SRF08)\n");
+		 	return -1;
+	  	}		
 
 	#endif
 	return result;
