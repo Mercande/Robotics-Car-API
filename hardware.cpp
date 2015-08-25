@@ -135,8 +135,8 @@ double* hardware_read_distance_i2c_all() {
 
 	#ifdef __APPLE__
 	#else
-		int fd_dist_1 = wiringPiI2CSetup(0x71);		// ad = 0x71 and 0x72
-		int fd_dist_2 = wiringPiI2CSetup(0x72);		// ad = 0x71 and 0x72
+		int fd_dist_1 = wiringPiI2CSetup(AD_DISTANCE_1);		// ad = 0x71 and 0x72
+		int fd_dist_2 = wiringPiI2CSetup(AD_DISTANCE_2);		// ad = 0x71 and 0x72
 		if(fd_dist_1 == -1 || fd_dist_2 == -1) {
 			printf("Can't setup the I2C device (distance SRF08)\n");
 			result[0] = -1;
@@ -198,8 +198,8 @@ int hardware_write_servo_i2c(int ad, int id_pwm, double value) {
 
 double hardware_read_distance(int device) {
 	switch(device) {
-		case 1: return hardware_read_distance_i2c(0x71);
-		case 2: return hardware_read_distance_i2c(0x72);
+		case 1: return hardware_read_distance_i2c(AD_DISTANCE_1);
+		case 2: return hardware_read_distance_i2c(AD_DISTANCE_2);
 	}
 	return 0;
 }
