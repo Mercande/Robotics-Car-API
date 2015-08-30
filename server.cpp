@@ -297,7 +297,7 @@ void task_ai(string name, bool debug)
 		HARDWARE_DISTANCE = hardware_read_distance();
 		
 		id_loop++;
-		tempo(2000);
+		tempo(100);
 	}
     
 }
@@ -305,7 +305,7 @@ void task_ai(string name, bool debug)
 void launch_thread()
 {
 	// Constructs the new thread and runs it. Does not block execution.
-    std::thread t1(task_ai, "ai", true);
+    std::thread t1(task_ai, "ai", false);
 
     //Makes the main thread wait for the new thread to finish execution, therefore blocks its own execution.
     //t1.join();
