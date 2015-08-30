@@ -30,6 +30,8 @@
 #include <sstream>
 #include <time.h>
 #include <math.h>
+#include <iostream>
+#include <thread>
 
 // Jsons
 #include "rapidjson/include/rapidjson/document.h"
@@ -46,6 +48,9 @@
 #define MAX_SIZE 900000
 #define PORT 8888
 
+
+static double* HARDWARE_DISTANCE;
+static const int HARDWARE_DISTANCE_SIZE = 2;
 
 using std::string;
 
@@ -70,13 +75,11 @@ string create_response_hardware(int id, string type) {
 	return create_response_hardware(id, type, hardware_read(id));
 }
 
-string create_response_hardware_distance() {
-	double* distances = new double[2];
-	distances = hardware_read_distance();
+string create_response_hardware_distance() {	
 	std::stringstream ss("");
-	ss << create_response_hardware(ID_DISTANCE_1, "distance", distances[0]);
+	ss << create_response_hardware(ID_DISTANCE_1, "distance", HARDWARE_DISTANCE[0]);
 	ss << ",";
-	ss << create_response_hardware(ID_DISTANCE_2, "distance", distances[1]);
+	ss << create_response_hardware(ID_DISTANCE_2, "distance", HARDWARE_DISTANCE[1]);
 	return ss.str();
 }
 
@@ -280,6 +283,36 @@ void test() {
 
 
 
+//The function we want to make the thread run.
+void task_ai(string name, bool debug)
+{
+	int id_loop = 0;
+
+	while(1) {
+
+		if(debug) {
+			printf("#%d [%s]\n", id_loop, name.c_str());
+		}
+
+		HARDWARE_DISTANCE = hardware_read_distance();
+		
+		id_loop++;
+		tempo(200);
+	}
+    
+}
+
+void launch_thread()
+{
+	// Constructs the new thread and runs it. Does not block execution.
+    std::thread t1(task_ai, "ai", false);
+
+    //Makes the main thread wait for the new thread to finish execution, therefore blocks its own execution.
+    //t1.join();
+
+    t1.detach();
+}
+
 
 
 /************************************************************/
@@ -288,12 +321,17 @@ void test() {
 
 int main()
 {
+	HARDWARE_DISTANCE = new double[HARDWARE_DISTANCE_SIZE];
+
+
 	if(hardware_init() < 0) {
 		printf("Error hardware_init() < 0");
 		return 0;
 	}
 
 	test();
+
+	launch_thread();
 
 	// Two socket descriptors which are just integer numbers used to access a socket
 	int sock_descriptor, conn_desc;
