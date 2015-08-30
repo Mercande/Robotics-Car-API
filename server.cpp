@@ -297,7 +297,7 @@ void task_ai(string name, bool debug)
 		HARDWARE_DISTANCE = hardware_read_distance();
 		
 		id_loop++;
-		tempo(100);
+		tempo(200);
 	}
     
 }
